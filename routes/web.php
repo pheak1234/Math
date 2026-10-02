@@ -6,6 +6,15 @@ use App\Http\Controllers\Auth\SocialController;
 Route::get('/auth/{provider}/redirect', [SocialController::class, 'redirect'])->name('social.redirect');
 Route::get('/auth/{provider}/callback', [SocialController::class, 'callback'])->name('social.callback');
 
+Route::post('/logout', function () {
+    \Illuminate\Support\Facades\Auth::logout();
+    return redirect('/');
+})->name('logout');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware('auth')->name('dashboard');
+
 Route::get('/', function () {
     return view('welcome');
 });

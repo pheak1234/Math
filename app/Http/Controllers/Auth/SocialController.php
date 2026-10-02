@@ -51,9 +51,10 @@ class SocialController extends Controller
             Auth::login($user);
 
             // Redirect to home or dashboard
-            return redirect('/');
+            return redirect('/dashboard');
             
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Social Login Error: ' . $e->getMessage(), ['exception' => $e]);
             // Handle error, e.g. user cancelled login
             return redirect('/login')->with('error', 'ការចូលគណនីបានបរាជ័យ។ សូមព្យាយាមម្តងទៀត។');
         }

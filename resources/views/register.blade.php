@@ -32,6 +32,12 @@
             <p class="text-slate-500 text-sm">សូមបំពេញព័ត៌មានខាងក្រោមដើម្បីចុះឈ្មោះ</p>
         </div>
 
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium text-center">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <form onsubmit="return false;" class="space-y-5">
             
             <!-- Name Input -->
