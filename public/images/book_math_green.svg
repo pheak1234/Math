@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="50%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#15803d"/>
+    </linearGradient>
+    <linearGradient id="cubeTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#86efac"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <linearGradient id="cubeLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="cubeRight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#15803d"/>
+      <stop offset="100%" stop-color="#14532d"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#bgGreen)" rx="8"/>
+  <rect x="0" y="0" width="300" height="400" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="12" rx="8"/>
+  <rect x="0" y="30" width="300" height="60" fill="#ffffff" fill-opacity="0.95"/>
+  <text x="20" y="72" font-family="system-ui, sans-serif" font-weight="900" font-size="34" fill="#15803d" letter-spacing="2">MATH II</text>
+  <text x="20" y="115" font-family="system-ui, sans-serif" font-weight="600" font-size="12" fill="#ffffff" letter-spacing="1">TEACHER EDITION</text>
+  
+  <!-- Isometric 3D cubes cluster -->
+  <g transform="translate(150, 240)">
+    <!-- Base cubes -->
+    <path d="M0 -30 L50 -5 Q50 -5 50 -5 L0 20 L-50 -5 Z" fill="url(#cubeTop)"/>
+    <path d="M-50 -5 L0 20 L0 80 L-50 55 Z" fill="url(#cubeLeft)"/>
+    <path d="M0 20 L50 -5 L50 55 L0 80 Z" fill="url(#cubeRight)"/>
+    
+    <!-- Top left cube -->
+    <g transform="translate(-45, -55)">
+      <path d="M0 -25 L40 -5 L0 15 L-40 -5 Z" fill="url(#cubeTop)"/>
+      <path d="M-40 -5 L0 15 L0 60 L-40 40 Z" fill="url(#cubeLeft)"/>
+      <path d="M0 15 L40 -5 L40 40 L0 60 Z" fill="url(#cubeRight)"/>
+    </g>
+    <!-- Top right cube -->
+    <g transform="translate(45, -55)">
+      <path d="M0 -25 L40 -5 L0 15 L-40 -5 Z" fill="url(#cubeTop)"/>
+      <path d="M-40 -5 L0 15 L0 60 L-40 40 Z" fill="url(#cubeLeft)"/>
+      <path d="M0 15 L40 -5 L40 40 L0 60 Z" fill="url(#cubeRight)"/>
+    </g>
+    <!-- Peak cube -->
+    <g transform="translate(0, -100)">
+      <path d="M0 -25 L40 -5 L0 15 L-40 -5 Z" fill="#bbf7d0"/>
+      <path d="M-40 -5 L0 15 L0 60 L-40 40 Z" fill="#4ade80"/>
+      <path d="M0 15 L40 -5 L40 40 L0 60 Z" fill="#16a34a"/>
+    </g>
+  </g>
+  <text x="150" y="375" font-family="system-ui, sans-serif" font-weight="500" font-size="11" fill="#ffffff" fill-opacity="0.8" text-anchor="middle">ALGEBRA &amp; GEOMETRY</text>
+</svg>

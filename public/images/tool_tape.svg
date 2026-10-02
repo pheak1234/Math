@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#f8fafc" rx="10"/>
+  <g transform="translate(100, 100)">
+    <!-- Coiled roll tape -->
+    <circle cx="0" cy="0" r="65" fill="#fef9c3" stroke="#eab308" stroke-width="3"/>
+    <circle cx="0" cy="0" r="48" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/>
+    <circle cx="0" cy="0" r="30" fill="#fef9c3" stroke="#eab308" stroke-width="2"/>
+    <circle cx="0" cy="0" r="15" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+    <!-- Unrolled strip -->
+    <path d="M48,0 C70,10 90,30 80,60" fill="none" stroke="#facc15" stroke-width="12" stroke-linecap="round"/>
+  </g>
+</svg>

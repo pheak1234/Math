@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#f8fafc" rx="10"/>
+  <g transform="translate(100, 105)">
+    <polygon points="-75,60 75,60 -75,-65" fill="#fef08a" stroke="#ca8a04" stroke-width="3"/>
+    <polygon points="-55,45 45,45 -55,-30" fill="#ffffff" stroke="#eab308" stroke-width="2"/>
+    <!-- Pencil -->
+    <g transform="translate(20, -10) rotate(45)">
+      <rect x="-6" y="-50" width="12" height="100" fill="#f97316" rx="2"/>
+      <polygon points="-6,50 6,50 0,65" fill="#fde047"/>
+      <polygon points="-2,60 2,60 0,65" fill="#1e293b"/>
+    </g>
+  </g>
+</svg>

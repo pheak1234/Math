@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 380" width="100%" height="100%">
+  <rect width="280" height="380" fill="#fef08a" rx="6"/>
+  <rect x="10" y="10" width="260" height="360" fill="none" stroke="#ca8a04" stroke-width="3" rx="4"/>
+  <rect x="20" y="25" width="240" height="85" fill="#b91c1c" rx="4"/>
+  <text x="140" y="55" font-family="sans-serif" font-weight="900" font-size="14" fill="#fde047" text-anchor="middle">អក្សរសិល្ប៍ និងប្រវត្តិសាស្ត្រ</text>
+  <text x="140" y="88" font-family="sans-serif" font-weight="900" font-size="20" fill="#ffffff" text-anchor="middle">បដិវត្តន៍កម្ពុជា</text>
+  <!-- Silhouette and graphic -->
+  <g transform="translate(140, 225)">
+    <circle cx="0" cy="0" r="70" fill="#dc2626" opacity="0.9"/>
+    <!-- Monument / symbol silhouette in black -->
+    <path d="M-30,65 L-20,10 L-10,-40 L0,-60 L10,-40 L20,10 L30,65 Z" fill="#000000"/>
+    <path d="M-60,65 L-40,25 L-20,65 Z" fill="#000000"/>
+    <path d="M60,65 L40,25 L20,65 Z" fill="#000000"/>
+  </g>
+  <text x="140" y="340" font-family="sans-serif" font-weight="700" font-size="13" fill="#854d0e" text-anchor="middle">ស្នាដៃស្រាវជ្រាវដ៏មានតម្លៃ</text>
+</svg>

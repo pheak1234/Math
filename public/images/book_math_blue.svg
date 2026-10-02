@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgSkyBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="60%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#bgSkyBlue)" rx="8"/>
+  <!-- Blueprint graph grid background -->
+  <g stroke="#ffffff" stroke-opacity="0.15" stroke-width="1">
+    <line x1="0" y1="50" x2="300" y2="50"/>
+    <line x1="0" y1="100" x2="300" y2="100"/>
+    <line x1="0" y1="150" x2="300" y2="150"/>
+    <line x1="0" y1="200" x2="300" y2="200"/>
+    <line x1="0" y1="250" x2="300" y2="250"/>
+    <line x1="0" y1="300" x2="300" y2="300"/>
+    <line x1="50" y1="0" x2="50" y2="400"/>
+    <line x1="100" y1="0" x2="100" y2="400"/>
+    <line x1="150" y1="0" x2="150" y2="400"/>
+    <line x1="200" y1="0" x2="200" y2="400"/>
+    <line x1="250" y1="0" x2="250" y2="400"/>
+  </g>
+  <text x="150" y="70" font-family="sans-serif" font-weight="900" font-size="30" fill="#ffffff" text-anchor="middle" letter-spacing="2">MATH</text>
+  <text x="150" y="95" font-family="sans-serif" font-weight="600" font-size="13" fill="#e0f2fe" text-anchor="middle">HIGH CONCEPTS</text>
+  
+  <!-- Math sketches and functions -->
+  <g transform="translate(150, 220)">
+    <!-- Sine curve -->
+    <path d="M-120,40 Q-60,-60 0,0 T120,-40" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <!-- Coordinate axes -->
+    <line x1="-120" y1="0" x2="120" y2="0" stroke="#fde047" stroke-width="2"/>
+    <line x1="0" y1="-80" x2="0" y2="80" stroke="#fde047" stroke-width="2"/>
+    <text x="-90" y="-40" font-family="serif" font-style="italic" font-size="14" fill="#ffffff">f(x) = sin(x)</text>
+    <text x="40" y="60" font-family="serif" font-style="italic" font-size="14" fill="#ffffff">e^(iπ) + 1 = 0</text>
+    <circle cx="50" cy="-35" r="25" fill="none" stroke="#ffffff" stroke-width="2"/>
+    <line x1="50" y1="-35" x2="68" y2="-17" stroke="#ffffff" stroke-width="2"/>
+  </g>
+  <text x="150" y="375" font-family="sans-serif" font-weight="600" font-size="12" fill="#ffffff" text-anchor="middle">CALCULUS &amp; COMPLEX ANALYSIS</text>
+</svg>

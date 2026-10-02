@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" width="100%" height="100%">
+  <rect width="300" height="200" fill="#f8fafc" rx="8"/>
+  <g transform="translate(150, 105)">
+    <!-- Piggy bank body -->
+    <ellipse cx="0" cy="15" rx="55" ry="40" fill="#1e293b"/>
+    <!-- Snout -->
+    <rect x="-65" y="10" width="18" height="20" rx="6" fill="#334155"/>
+    <circle cx="-60" cy="16" r="2.5" fill="#64748b"/>
+    <circle cx="-60" cy="24" r="2.5" fill="#64748b"/>
+    <!-- Ears -->
+    <polygon points="-25,-15 -15,-35 -5,-15" fill="#334155"/>
+    <!-- Eye -->
+    <circle cx="-35" cy="5" r="4" fill="#f8fafc"/>
+    <circle cx="-36" cy="4" r="1.5" fill="#0f172a"/>
+    <!-- Legs -->
+    <rect x="-35" y="48" width="16" height="18" rx="4" fill="#0f172a"/>
+    <rect x="18" y="48" width="16" height="18" rx="4" fill="#0f172a"/>
+    <!-- Coin slot -->
+    <rect x="-12" y="-23" width="24" height="4" fill="#0f172a" rx="2"/>
+    <!-- Gold coins dropping -->
+    <g fill="#fbbf24" stroke="#d97706" stroke-width="2">
+      <ellipse cx="0" cy="-40" rx="16" ry="7"/>
+      <ellipse cx="15" cy="-60" rx="14" ry="6"/>
+      <ellipse cx="-10" cy="-80" rx="12" ry="5"/>
+      <text x="0" y="-38" font-family="sans-serif" font-weight="900" font-size="8" fill="#78350f" text-anchor="middle">$</text>
+    </g>
+  </g>
+</svg>
