@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none" class="anontak-logo">
+  <defs>
+    <linearGradient id="anontakGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left Icon Mark: Infinity + Khmer Kbach Flame Motif -->
+  <g transform="translate(6, 6) scale(0.85)">
+    <!-- Base Infinity Curve (Left loop & crossover) -->
+    <path d="M 44 42 C 34 26 14 26 14 42 C 14 58 34 58 44 42 C 51 31 61 28 70 34" 
+          stroke="#0f172a" stroke-width="6.5" stroke-linecap="round" fill="none" />
+
+    <!-- Lower Right Loop returning to center -->
+    <path d="M 44 42 C 54 58 74 60 84 48 C 88 43 89 36 86 30" 
+          stroke="#0f172a" stroke-width="6.5" stroke-linecap="round" fill="none" />
+
+    <!-- Khmer Kbach Flame Crest (stylized modern vector petals) -->
+    <!-- Main Top Flame Petal -->
+    <path d="M 72 32 C 75 22 84 12 92 6 C 90 14 93 20 97 22 C 95 16 99 10 105 7 C 103 15 106 20 110 24 C 102 24 95 30 92 38 C 90 42 86 44 82 43 C 78 42 75 37 72 32 Z" 
+          fill="#0f172a" />
+
+    <!-- Outer Secondary Flame Petal -->
+    <path d="M 94 22 C 100 18 106 14 112 15 C 109 20 111 25 115 28 C 109 29 104 35 102 42 C 99 37 96 30 94 22 Z" 
+          fill="#0f172a" />
+
+    <!-- Dynamic Cyan Accent Flame (highlighting modern energy) -->
+    <path d="M 68 36 C 72 31 78 30 83 34 C 80 39 77 43 72 44 C 69 44 68 40 68 36 Z" 
+          fill="url(#accentGradient)" />
+  </g>
+
+  <!-- Right Typography: ANONTAK Modern Geometric Sans -->
+  <text x="112" y="47" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="29" font-weight="800" letter-spacing="3.5" fill="#0f172a">
+    ANONTAK
+  </text>
+  <text x="114" y="63" font-family="'Kantumruy Pro', sans-serif" font-size="9" font-weight="600" letter-spacing="1.5" fill="#64748b">
+    គណិតវិទ្យា &amp; ការអប់រំ
+  </text>
+</svg>

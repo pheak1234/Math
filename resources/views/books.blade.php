@@ -13,91 +13,7 @@
 </head>
 <body class="bg-white text-slate-800 antialiased font-sans">
 
-    <!-- Top Navigation Bar -->
-    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all shadow-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16 sm:h-18">
-                
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <a href="/" class="flex items-center gap-2 group">
-                        <div class="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-sm group-hover:bg-sky-600 transition-colors">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 12c-2-2.5-4-4-6.5-4a4.5 4.5 0 0 0 0 9c2.5 0 4.5-1.5 6.5-5 2 3.5 4 5 6.5 5a4.5 4.5 0 0 0 0-9c-2.5 0-4.5 1.5-6.5 4z" />
-                            </svg>
-                        </div>
-                        <span class="font-extrabold text-xl tracking-wider text-slate-900 group-hover:text-sky-600 transition-colors" style="font-family: 'Outfit', sans-serif;">
-                            ANONTAK
-                        </span>
-                    </a>
-                </div>
-
-                <!-- Desktop Nav Links -->
-                <nav class="hidden lg:flex items-center space-x-1 xl:space-x-2 text-[15px] font-medium text-slate-700">
-                    <a href="/" class="px-3 py-1.5 hover:text-sky-600 transition-colors">ទំព័រដើម</a>
-                    <a href="/mathematics" class="px-3 py-1.5 hover:text-sky-600 transition-colors">គណិតវិទ្យា</a>
-                    <a href="/books" class="px-3 py-1.5 text-sky-600 font-semibold relative after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-sky-600">សៀវភៅ</a>
-                    <a href="#courses" class="px-3 py-1.5 hover:text-sky-600 transition-colors">វគ្គសិក្សា</a>
-                    <a href="#articles" class="px-3 py-1.5 hover:text-sky-600 transition-colors">ព័ត៌មានប្រចាំថ្ងៃ</a>
-                    <a href="#about" class="px-3 py-1.5 hover:text-sky-600 transition-colors">អំពីយើង</a>
-                    <a href="#contact" class="px-3 py-1.5 hover:text-sky-600 transition-colors">ទំនាក់ទំនង</a>
-                </nav>
-
-                <!-- Right Utility -->
-                <div class="flex items-center space-x-3 sm:space-x-4">
-                    <button class="p-2 text-slate-600 hover:text-sky-600 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </button>
-                    <!-- User Account / Profile -->
-                    <div class="relative">
-                        @auth
-                            <button onclick="toggleUserMenu()" id="userBtn" class="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-full text-slate-700 hover:bg-slate-100 transition-colors bg-white shadow-sm border border-slate-200">
-                                <div class="w-7 h-7 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-sm">
-                                    {{ substr(Auth::user()->name, 0, 1) }}
-                                </div>
-                                <span class="text-sm font-medium hidden sm:block">{{ Auth::user()->name }}</span>
-                                <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <!-- Dropdown -->
-                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50 text-sm">
-                                <div class="px-4 py-2 text-xs text-slate-500 font-medium border-b border-slate-100 mb-1">
-                                    គណនីរបស់អ្នក
-                                </div>
-                                <a href="/dashboard" class="block px-4 py-2 hover:bg-slate-50 text-slate-700 font-medium">ផ្ទាំងគ្រប់គ្រង (Dashboard)</a>
-                                <a href="/books" class="block px-4 py-2 hover:bg-slate-50 text-slate-600">សៀវភៅទាំងអស់</a>
-                                <hr class="my-1 border-slate-100">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-medium">ចាកចេញ (Logout)</button>
-                                </form>
-                            </div>
-                        @else
-                            <button onclick="toggleUserMenu()" id="userBtn" class="flex items-center gap-1.5 p-1.5 sm:px-2 sm:py-1 rounded-full text-slate-700 hover:bg-slate-100 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                                <svg class="w-3 h-3 text-slate-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <!-- Dropdown -->
-                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50 text-sm">
-                                <a href="/login" class="block px-4 py-2 hover:bg-slate-50 text-slate-700 font-medium">ចូលគណនី (Sign In)</a>
-                                <a href="/register" class="block px-4 py-2 hover:bg-slate-50 text-slate-700 font-medium">ចុះឈ្មោះគណនីថ្មី</a>
-                                <hr class="my-1 border-slate-100">
-                                <a href="#my-library" class="block px-4 py-2 hover:bg-slate-50 text-slate-600">សៀវភៅរបស់ខ្ញុំ</a>
-                            </div>
-                        @endauth
-                    </div>
-                    <div class="flex items-center text-xs font-semibold border border-slate-200 rounded-lg p-0.5 bg-slate-50">
-                        <button class="px-2 py-1 rounded bg-white text-slate-900 shadow-2xs font-bold">ENG</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    @include('partials.header')
 
     <!-- HERO SECTION (Premium Dark Background Image Motif) -->
     <section class="relative py-16 md:py-28 overflow-hidden bg-slate-900"
@@ -154,234 +70,132 @@
         </div>
     </section>
 
-    <!-- MAIN CONTENT: GRID & SIDEBAR -->
+    <!-- MAIN CONTENT: 5-COLUMN BOOK GRID & PAGINATION (10 BOOKS PER PAGE) -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-slate-50 relative">
         <div class="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12 relative z-10">
-            
-            <!-- LEFT: Book Grid (3 columns on lg, 2 on md) -->
-            <div class="lg:col-span-3">
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">សៀវភៅពេញនិយម</h2>
-                    <a href="#" class="text-sm font-semibold text-sky-600 hover:text-sky-700 flex items-center gap-1 transition-colors">
-                        មើលទាំងអស់
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </a>
+        
+        <div class="relative z-10">
+            <!-- Header and Filter Bar -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-200">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">សៀវភៅទាំងអស់</h2>
+                    <p class="text-slate-500 text-sm mt-1">បណ្តុំសៀវភៅគណិតវិទ្យា និងវិទ្យាសាស្ត្រគុណភាពខ្ពស់</p>
                 </div>
-                
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
-                    
-                    <!-- Book Item 1 (Links to detail page) -->
-                    <a href="/books/detail" class="group cursor-pointer block">
-                        <div class="relative overflow-hidden rounded-2xl shadow-sm border border-slate-200/60 group-hover:shadow-2xl transition-all duration-500 bg-white flex justify-center items-center p-6 transform group-hover:-translate-y-2">
-                            <img src="/images/book_maths_yellow.jpg" alt="Book 1" class="w-full aspect-[3/4] object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-xl">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                <button class="w-full py-2.5 bg-white text-slate-900 font-bold text-xs rounded-xl shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-sky-50">មើលព័ត៌មានលម្អិត</button>
-                            </div>
-                        </div>
+
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+                    <a href="{{ route('books.index', ['tab' => 'all']) }}" 
+                       class="px-4 py-2 rounded-full text-xs font-bold transition-all shadow-xs {{ ($tab ?? 'all') === 'all' ? 'bg-sky-600 text-white shadow-sky-200' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}">
+                        ទាំងអស់ ({{ $counts['all'] ?? $books->total() }})
                     </a>
-                    
-                    <!-- Book Item 2 -->
-                    <div class="group cursor-pointer">
-                        <div class="relative overflow-hidden rounded-2xl shadow-sm border border-slate-200/60 group-hover:shadow-2xl transition-all duration-500 bg-white flex justify-center items-center p-6 transform group-hover:-translate-y-2">
-                            <img src="/images/book_math_green.svg" alt="Book 2" class="w-full aspect-[3/4] object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-xl">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                <button class="w-full py-2.5 bg-white text-slate-900 font-bold text-xs rounded-xl shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-sky-50">អានឥឡូវនេះ</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Book Item 3 -->
-                    <div class="group cursor-pointer">
-                        <div class="relative overflow-hidden rounded-2xl shadow-sm border border-slate-200/60 group-hover:shadow-2xl transition-all duration-500 bg-white flex justify-center items-center p-6 transform group-hover:-translate-y-2">
-                            <img src="/images/book_math_polyhedron.svg" alt="Book 3" class="w-full aspect-[3/4] object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-xl">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                <button class="w-full py-2.5 bg-white text-slate-900 font-bold text-xs rounded-xl shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-sky-50">អានឥឡូវនេះ</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Book Item 4 -->
-                    <div class="group cursor-pointer">
-                        <div class="relative overflow-hidden rounded-2xl shadow-sm border border-slate-200/60 group-hover:shadow-2xl transition-all duration-500 bg-white flex justify-center items-center p-6 transform group-hover:-translate-y-2">
-                            <img src="/images/book_math_teal.svg" alt="Book 4" class="w-full aspect-[3/4] object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-xl">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                <button class="w-full py-2.5 bg-white text-slate-900 font-bold text-xs rounded-xl shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-sky-50">អានឥឡូវនេះ</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Book Item 5 -->
-                    <div class="group cursor-pointer">
-                        <div class="relative overflow-hidden rounded-2xl shadow-sm border border-slate-200/60 group-hover:shadow-2xl transition-all duration-500 bg-white flex justify-center items-center p-6 transform group-hover:-translate-y-2">
-                            <img src="/images/book_cambodian_apsara.svg" alt="Book 5" class="w-full aspect-[3/4] object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-xl">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                <button class="w-full py-2.5 bg-white text-slate-900 font-bold text-xs rounded-xl shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-sky-50">អានឥឡូវនេះ</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Book Item 6 -->
-                    <div class="group cursor-pointer">
-                        <div class="relative overflow-hidden rounded-2xl shadow-sm border border-slate-200/60 group-hover:shadow-2xl transition-all duration-500 bg-white flex justify-center items-center p-6 transform group-hover:-translate-y-2">
-                            <img src="/images/book_cambodian_history.svg" alt="Book 6" class="w-full aspect-[3/4] object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-xl">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                <button class="w-full py-2.5 bg-white text-slate-900 font-bold text-xs rounded-xl shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-sky-50">អានឥឡូវនេះ</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Book Item 7 -->
-                    <div class="group cursor-pointer">
-                        <div class="relative overflow-hidden rounded-2xl shadow-sm border border-slate-200/60 group-hover:shadow-2xl transition-all duration-500 bg-slate-900 flex justify-center items-center transform group-hover:-translate-y-2">
-                            <img src="/images/book_maths_yellow.jpg" alt="Book 7" class="w-full aspect-[3/4] object-cover group-hover:scale-105 transition-transform duration-700">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                <button class="w-full py-2.5 bg-sky-500 text-white font-bold text-xs rounded-xl shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-sky-400">អានឥឡូវនេះ</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Book Item 8 -->
-                    <div class="group cursor-pointer">
-                        <div class="relative overflow-hidden rounded-2xl shadow-sm border border-slate-200/60 group-hover:shadow-2xl transition-all duration-500 bg-white flex justify-center items-center p-6 transform group-hover:-translate-y-2">
-                            <img src="/images/book_math_blue.svg" alt="Book 8" class="w-full aspect-[3/4] object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-xl">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                <button class="w-full py-2.5 bg-white text-slate-900 font-bold text-xs rounded-xl shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-sky-50">អានឥឡូវនេះ</button>
-                            </div>
-                        </div>
-                    </div>
-
+                    <a href="{{ route('books.index', ['tab' => 'free']) }}" 
+                       class="px-4 py-2 rounded-full text-xs font-bold transition-all shadow-xs {{ ($tab ?? '') === 'free' ? 'bg-emerald-600 text-white shadow-emerald-200' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}">
+                        ឥតគិតថ្លៃ ({{ $counts['free'] ?? 0 }})
+                    </a>
+                    <a href="{{ route('books.index', ['tab' => 'premium']) }}" 
+                       class="px-4 py-2 rounded-full text-xs font-bold transition-all shadow-xs {{ ($tab ?? '') === 'premium' ? 'bg-slate-900 text-white shadow-slate-200' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}">
+                        Premium ({{ $counts['premium'] ?? 0 }})
+                    </a>
                 </div>
             </div>
 
-            <!-- RIGHT: Sidebar (Premium styling) -->
-            <div class="lg:col-span-1 space-y-8">
-                
-                <!-- Filter Card -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6">
-                    <h3 class="text-base font-bold text-slate-900 mb-5 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-                        តម្រងការស្វែងរក
-                    </h3>
-                    
-                    <!-- Filter: Category -->
-                    <div class="mb-6">
-                        <h4 class="text-sm font-semibold text-slate-700 mb-3">ប្រភេទសៀវភៅ</h4>
-                        <div class="space-y-2.5">
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" class="w-4.5 h-4.5 rounded border-slate-300 text-sky-500 focus:ring-sky-500 transition-colors">
-                                <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">ថ្នាក់ទី ៧ ដល់ ៩</span>
-                            </label>
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" class="w-4.5 h-4.5 rounded border-slate-300 text-sky-500 focus:ring-sky-500 transition-colors">
-                                <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">ថ្នាក់ទី ១០ ដល់ ១២</span>
-                            </label>
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" class="w-4.5 h-4.5 rounded border-slate-300 text-sky-500 focus:ring-sky-500 transition-colors">
-                                <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">ស្រាវជ្រាវទូទៅ</span>
-                            </label>
+            <!-- 5-Column Book Grid (5 items per row) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
+                @forelse($books as $book)
+                    <div class="bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-200 flex flex-col relative">
+                        <!-- Image Container -->
+                        <a href="{{ route('books.show', $book->id) }}" class="block relative aspect-[3/4] overflow-hidden border-b border-slate-100">
+                            <img src="{{ $book->cover_image ?? '/images/book_math_blue.svg' }}" alt="{{ $book->title }}" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            
+                            <!-- Badges -->
+                            @if($book->price > 0)
+                                <div class="absolute top-0 left-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wide z-10 shadow-sm">
+                                    Premium
+                                </div>
+                            @else
+                                <div class="absolute top-0 left-0 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wide z-10 shadow-sm">
+                                    Free
+                                </div>
+                            @endif
+                        </a>
+                        
+                        <!-- Details -->
+                        <div class="p-3 flex flex-col flex-1">
+                            <!-- Title -->
+                            <a href="{{ route('books.show', $book->id) }}" class="text-sm font-medium text-sky-700 hover:text-orange-600 hover:underline line-clamp-2 leading-tight mb-1">
+                                {{ $book->title }}
+                            </a>
+                            
+                            <!-- Author -->
+                            <div class="text-[11px] text-slate-500 mb-1.5">
+                                ដោយ <span class="text-slate-700">{{ $book->author ?? 'ANONTAK' }}</span>
+                            </div>
+                            
+                            <!-- Rating -->
+                            <div class="flex items-center gap-1 mb-2">
+                                <div class="flex text-amber-500 text-xs">
+                                    @php
+                                        $avg = $book->averageRating();
+                                        $fullStars = floor($avg);
+                                    @endphp
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= $fullStars)
+                                            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                        @else
+                                            <svg class="w-3.5 h-3.5 fill-current text-slate-300" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="text-[11px] text-sky-600 hover:underline">{{ $book->reviews->count() }}</span>
+                            </div>
+                            
+                            <!-- Price & Status -->
+                            <div class="mt-auto pt-2 flex items-end justify-between">
+                                <div>
+                                    @if($book->price > 0)
+                                        <div class="text-lg font-bold text-slate-900 leading-none">${{ number_format($book->price, 2) }}</div>
+                                    @else
+                                        <div class="text-base font-bold text-emerald-600 leading-none">FREE</div>
+                                    @endif
+                                </div>
+                                
+                                @if(Auth::check() && Auth::user()->hasReadBook($book))
+                                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 border border-emerald-200">
+                                        ✓ នៅក្នុងបណ្ណាល័យ
+                                    </span>
+                                @elseif(Auth::check() && Auth::user()->hasOrderedBook($book))
+                                    <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 border border-amber-200">
+                                        កំពុងរង់ចាំ
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Filter: Price -->
-                    <div>
-                        <h4 class="text-sm font-semibold text-slate-700 mb-3">តម្លៃសៀវភៅ</h4>
-                        <div class="space-y-2.5">
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" class="w-4.5 h-4.5 rounded border-slate-300 text-sky-500 focus:ring-sky-500 transition-colors">
-                                <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">ឥតគិតថ្លៃ</span>
-                            </label>
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" class="w-4.5 h-4.5 rounded border-slate-300 text-sky-500 focus:ring-sky-500 transition-colors">
-                                <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">សម្រាប់លក់ (Premium)</span>
-                            </label>
-                        </div>
+                @empty
+                    <div class="col-span-full py-16 text-center bg-white rounded-2xl border border-slate-200">
+                        <p class="text-slate-500 text-sm">មិនទាន់មានសៀវភៅក្នុងផ្នែកនេះនៅឡើយទេ។</p>
                     </div>
-                </div>
-
-                <!-- Promo Banner -->
-                <div class="rounded-2xl overflow-hidden shadow-lg relative group cursor-pointer border border-sky-500/20 transform hover:-translate-y-1 transition-all duration-500">
-                    <img src="/images/math_test_camera_tutorial.jpg" alt="Promo" class="w-full aspect-[4/5] object-cover group-hover:scale-105 transition-transform duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
-                    <div class="absolute inset-x-0 bottom-0 p-5">
-                        <span class="inline-block px-2 py-1 rounded bg-rose-500 text-white text-[10px] font-bold tracking-wider uppercase mb-2">HOT OFFER</span>
-                        <h4 class="text-white text-lg font-bold leading-tight mb-1">ថ្នាក់រៀនគណិតវិទ្យាពិសេស</h4>
-                        <p class="text-slate-300 text-xs mb-3">ចុះឈ្មោះឥឡូវនេះដើម្បីទទួលបានការបញ្ចុះតម្លៃ</p>
-                        <div class="inline-flex items-center gap-2 text-sky-400 text-xs font-bold">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            090 000 000
-                        </div>
-                    </div>
-                </div>
-
+                @endforelse
             </div>
 
+            <!-- Pagination (if over 10 items) -->
+            @if($books->hasPages())
+                <div class="mt-14 pt-8 border-t border-slate-200/80 flex justify-center">
+                    {{ $books->links('vendor.pagination.tailwind') }}
+                </div>
+            @endif
         </div>
     </section>
 
-    <footer class="bg-slate-900 text-slate-400 text-sm border-t border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                
-                <div class="space-y-3">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded bg-sky-500 flex items-center justify-center text-white">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <path d="M12 12c-2-2.5-4-4-6.5-4a4.5 4.5 0 0 0 0 9c2.5 0 4.5-1.5 6.5-5 2 3.5 4 5 6.5 5a4.5 4.5 0 0 0 0-9c-2.5 0-4.5 1.5-6.5 4z" />
-                            </svg>
-                        </div>
-                        <span class="font-bold text-lg text-white" style="font-family: 'Outfit', sans-serif;">ANONTAK</span>
-                    </div>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        គេហទំព័រអប់រំ និងចែករំលែកធនធានគណិតវិទ្យាសម្រាប់សិស្សានុសិស្ស លោកគ្រូអ្នកគ្រូ និងអ្នកស្រឡាញ់ការសិក្សា។
-                    </p>
-                </div>
-
-                <div>
-                    <h5 class="text-white font-semibold text-xs tracking-wider uppercase mb-3">ផ្នែកសំខាន់ៗ</h5>
-                    <ul class="space-y-2 text-xs">
-                        <li><a href="/" class="hover:text-white transition-colors">គេហទំព័រដើម</a></li>
-                        <li><a href="/mathematics" class="hover:text-white transition-colors">មេរៀនគណិតវិទ្យា</a></li>
-                        <li><a href="/books" class="hover:text-white transition-colors">សៀវភៅពុម្ព និងលំហាត់</a></li>
-                        <li><a href="#courses" class="hover:text-white transition-colors">វគ្គសិក្សាអនឡាញ</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h5 class="text-white font-semibold text-xs tracking-wider uppercase mb-3">ឧបករណ៍ និងជំនួយ</h5>
-                    <ul class="space-y-2 text-xs">
-                        <li><button onclick="alert('ជំនួយកិច្ចការផ្ទះ')" class="hover:text-white transition-colors text-left cursor-pointer">ជំនួយកិច្ចការផ្ទះ</button></li>
-                        <li><button onclick="alert('លំហាត់ប្រចាំថ្ងៃ')" class="hover:text-white transition-colors text-left cursor-pointer">លំហាត់ប្រចាំថ្ងៃ</button></li>
-                        <li><button onclick="alert('ទាញយក App')" class="hover:text-white transition-colors text-left cursor-pointer">ទាញយក App ទូរស័ព្ទ</button></li>
-                        <li><a href="#contact" class="hover:text-white transition-colors">ទំនាក់ទំនងក្រុមការងារ</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h5 class="text-white font-semibold text-xs tracking-wider uppercase mb-3">ទទួលព័ត៌មានថ្មីៗ</h5>
-                    <p class="text-xs text-slate-400 mb-3">ចុះឈ្មោះអ៊ីមែលដើម្បីទទួលបានលំហាត់ថ្មីៗ និងសៀវភៅឥតគិតថ្លៃ៖</p>
-                    <form onsubmit="alert('អរគុណសម្រាប់ការចុះឈ្មោះទទួលព័ត៌មាន!'); return false;" class="flex gap-2">
-                        <input type="email" placeholder="អ៊ីមែលរបស់អ្នក..." required class="bg-slate-800 border border-slate-700 text-white text-xs rounded-lg px-3 py-2 flex-1 focus:outline-hidden focus:border-sky-500">
-                        <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white text-xs px-3 py-2 rounded-lg font-medium transition-colors cursor-pointer">
-                            បញ្ជូន
-                        </button>
-                    </form>
-                </div>
-
-            </div>
-
-            <div class="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-                <p>2026 All Right Reserved - ANONTAK</p>
-                <div class="flex items-center space-x-4">
-                    <a href="#privacy" class="hover:text-slate-400">គោលការណ៍ឯកជនភាព</a>
-                    <span>&bull;</span>
-                    <a href="#terms" class="hover:text-slate-400">លក្ខខណ្ឌប្រើប្រាស់</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    @include('partials.footer')
 
     <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+
         function toggleUserMenu() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('hidden');

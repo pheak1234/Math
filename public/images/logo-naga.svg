@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 84" fill="none" class="anontak-naga-logo">
+  <defs>
+    <linearGradient id="nagaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="60%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="crestAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0ea5e9" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left Icon Mark: Modern Khmer Naga + Infinity Symbol (នាគអនន្ត) -->
+  <g transform="translate(6, 4)">
+    <!-- Infinity Tail & Body Loop (ដងខ្លួនរាងអនន្ត) -->
+    <!-- Left Infinity Loop -->
+    <path d="M 46 44 C 36 28 14 28 14 44 C 14 60 36 60 46 44 C 54 32 66 32 75 39" 
+          stroke="#0f172a" stroke-width="7" stroke-linecap="round" fill="none" />
+    
+    <!-- Loop Underbelly returning -->
+    <path d="M 46 44 C 55 58 72 62 82 52 C 86 47 88 41 85 35" 
+          stroke="#0f172a" stroke-width="7" stroke-linecap="round" fill="none" />
+
+    <!-- Naga Arched Neck & Throat (កនាគរាជ) -->
+    <path d="M 75 39 C 80 44 85 46 90 42 C 94 38 93 30 90 22 C 88 18 84 14 80 12" 
+          stroke="#0f172a" stroke-width="6.5" stroke-linecap="round" fill="none" />
+
+    <!-- Naga Upper Head & Open Snout (ក្បាលនាគ និងចំពុះ) -->
+    <path d="M 80 14 C 84 12 90 12 95 15 C 98 17 101 16 103 13 C 104 16 105 19 102 21 C 105 22 108 24 107 27 C 103 28 98 26 95 24 C 92 26 89 31 87 36" 
+          fill="#0f172a" />
+
+    <!-- Multi-Tiered Khmer Naga Crest (មកុដ/សិង្ហនាគខ្មែរ ៣ ថ្នាក់) -->
+    <!-- Top Apex Crest Flame -->
+    <path d="M 82 12 C 86 5 95 0 102 0 C 99 7 101 12 106 14 C 103 9 108 4 115 2 C 112 9 114 14 118 17 C 111 17 104 22 101 29 C 96 23 88 18 82 12 Z" 
+          fill="#0f172a" />
+
+    <!-- Secondary Radiating Crest Petal -->
+    <path d="M 103 14 C 109 10 116 7 122 8 C 119 13 121 17 126 20 C 120 20 114 25 112 32 C 108 27 104 20 103 14 Z" 
+          fill="#0f172a" />
+
+    <!-- Dynamic Cyan Accent Flame Crest (ថាមពលគណិតវិទ្យា) -->
+    <path d="M 77 34 C 81 29 86 28 90 32 C 87 37 84 41 79 41 C 77 41 76 37 77 34 Z" 
+          fill="url(#crestAccent)" />
+
+    <!-- Naga Eye (ភ្នែកនាគ) -->
+    <circle cx="91" cy="18" r="1.8" fill="#38bdf8" />
+  </g>
+
+  <!-- Right Typography: ANONTAK & Subtitle -->
+  <text x="144" y="47" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="31" font-weight="900" letter-spacing="4" fill="#0f172a">
+    ANONTAK
+  </text>
+  <text x="146" y="66" font-family="'Kantumruy Pro', sans-serif" font-size="10.5" font-weight="700" letter-spacing="2.2" fill="#0284c7">
+    នាគគណិតវិទ្យា &amp; ការអប់រំ
+  </text>
+</svg>

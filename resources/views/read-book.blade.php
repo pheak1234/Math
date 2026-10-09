@@ -100,6 +100,37 @@
             z-index: 5;
             /* Transparent block so right clicks on canvas itself are intercepted */
         }
+
+        /* Dynamic Watermark */
+        .watermark-container {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 10;
+            pointer-events: none;
+            overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            opacity: 0.12; /* Visible enough to deter, light enough to read */
+        }
+        
+        .watermark-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+            transform: rotate(-30deg);
+            margin: 50px 80px;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        /* Print Blocker */
+        @media print {
+            body {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body oncontextmenu="return false;"> <!-- Disable right-click globally -->
@@ -108,21 +139,38 @@
         <div class="brand">ANONTAK Reader</div>
         <div class="controls">
             <button id="prev" disabled>ទំព័រមុន (Prev)</button>
-            <span style="font-size: 0.9rem;">ទំព័រ <span id="page_num"></span> / <span id="page_count"></span></span>
+            <span style="font-size: 0.9rem;">
+                ទំព័រ <span id="page_num"></span> / <span id="page_count"></span>
+                <span style="margin: 0 8px; color: #94a3b8;">|</span>
+                <span id="progress-text" style="color: #38bdf8; font-weight: bold;">0%</span>
+            </span>
             <button id="next">ទំព័របន្ទាប់ (Next)</button>
         </div>
         <div>
-            <button onclick="window.close()" style="background-color: #ef4444;">បិទ (Close)</button>
+            <button onclick="window.close(); window.location.href='/dashboard';" style="background-color: #ef4444;">បិទ (Close)</button>
         </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div id="progress-bar-container" style="width: 100%; height: 4px; background-color: #334155; position: relative; z-index: 9;">
+        <div id="progress-bar" style="width: 0%; height: 100%; background-color: #38bdf8; transition: width 0.2s;"></div>
     </div>
 
     <div id="viewer-container">
         <div id="canvas-wrapper">
             <canvas id="pdf-render"></canvas>
             <div class="protection-overlay"></div>
+            
+            <!-- Dynamic Watermark Overlay -->
+            <div class="watermark-container">
+                @for ($i = 0; $i < 20; $i++)
+                    <div class="watermark-text">{{ Auth::user()->name }} | {{ Auth::user()->phone ?? Auth::user()->email }}</div>
+                @endfor
+            </div>
         </div>
     </div>
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
         // Restrict keyboard shortcuts (Ctrl+S, Ctrl+P, PrintScreen)
         document.addEventListener('keydown', function(e) {
@@ -135,10 +183,58 @@
             }
         });
 
+        // Prevent PrintScreen key
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'PrintScreen' || e.keyCode === 44) {
+                navigator.clipboard.writeText(''); // Attempt to clear clipboard
+                document.body.style.display = 'none'; // Blank the screen
+                alert('ការថតអេក្រង់ត្រូវបានហាមឃាត់យ៉ាងតឹងរ៉ឹង! (Screenshots are strictly prohibited)');
+                window.location.href = '/dashboard';
+            }
+        });
+
+        // Add a blanking overlay instead of CSS blur (which breaks layout)
+        const blurOverlay = document.createElement('div');
+        blurOverlay.style.position = 'fixed';
+        blurOverlay.style.top = '0';
+        blurOverlay.style.left = '0';
+        blurOverlay.style.width = '100vw';
+        blurOverlay.style.height = '100vh';
+        blurOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        blurOverlay.style.zIndex = '9999';
+        blurOverlay.style.display = 'none';
+        blurOverlay.style.justifyContent = 'center';
+        blurOverlay.style.alignItems = 'center';
+        blurOverlay.style.fontSize = '24px';
+        blurOverlay.style.fontWeight = 'bold';
+        blurOverlay.style.color = '#ef4444';
+        blurOverlay.innerText = 'ផ្អាកជាបណ្តោះអាសន្ន (Paused)';
+        document.body.appendChild(blurOverlay);
+
+        // Hide screen when the mouse leaves the browser window (prevents Snipping Tool)
+        document.addEventListener('mouseleave', () => {
+            blurOverlay.style.display = 'flex';
+        });
+        
+        document.addEventListener('mouseenter', () => {
+            blurOverlay.style.display = 'none';
+        });
+
+        // Hide screen when window loses focus
+        window.addEventListener('blur', () => {
+            blurOverlay.style.display = 'flex';
+        });
+        
+        window.addEventListener('focus', () => {
+            blurOverlay.style.display = 'none';
+        });
+
         // Initialize PDF.js
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-        const url = '/sample.pdf';
+        // Assuming the book has a pdf_url attribute or using a default for demo
+        const url = '{{ $book->pdf_url ?? "/sample.pdf" }}';
+        const bookId = '{{ $book->id }}';
 
         let pdfDoc = null,
             pageNum = 1,
@@ -170,6 +266,11 @@
                     if (pageNumIsPending !== null) {
                         renderPage(pageNumIsPending);
                         pageNumIsPending = null;
+                    }
+                    
+                    // Update progress after canvas is fully sized and rendered
+                    if (typeof updateProgress === 'function') {
+                        updateProgress();
                     }
                 });
 
@@ -207,11 +308,90 @@
             updateButtons();
         };
 
-        // Update button states
+        // Update button states and progress bar
         const updateButtons = () => {
             document.querySelector('#prev').disabled = pageNum <= 1;
             document.querySelector('#next').disabled = pageNum >= pdfDoc.numPages;
+            updateProgress();
         };
+
+        // Store the maximum progress achieved
+        let maxPercentage = {{ $currentProgress ?? 0 }};
+        
+        // Initial setup of progress bar if already read before
+        if(maxPercentage > 0) {
+            document.querySelector('#progress-bar').style.width = Math.round(maxPercentage) + '%';
+            const textEl = document.querySelector('#progress-text');
+            if (textEl) {
+                textEl.textContent = Math.round(maxPercentage) + '%';
+            }
+        }
+
+        // Calculate Reading Progress
+        const updateProgress = () => {
+            if (!pdfDoc) return;
+            
+            let percentage = 0;
+            if (pdfDoc.numPages > 1) {
+                // Page-based percentage
+                percentage = Math.round((pageNum / pdfDoc.numPages) * 100);
+            } else {
+                // Scroll-based percentage for 1-page documents
+                const container = document.querySelector('#viewer-container');
+                const scrolled = container.scrollTop;
+                const totalHeight = container.scrollHeight - container.clientHeight;
+                
+                if (totalHeight > 0) {
+                    percentage = Math.round((scrolled / totalHeight) * 100);
+                } else {
+                    percentage = 100; // fits entirely on screen
+                }
+            }
+            
+            // Limit percentage between 0 and 100 just in case
+            if (percentage < 0) percentage = 0;
+            if (percentage > 100) percentage = 100;
+
+            // Only increase the progress (don't decrease if user scrolls/flips back)
+            if (percentage > maxPercentage) {
+                maxPercentage = percentage;
+                saveProgressToDatabase(maxPercentage);
+            }
+
+            document.querySelector('#progress-bar').style.width = Math.round(maxPercentage) + '%';
+            
+            const textEl = document.querySelector('#progress-text');
+            if (textEl) {
+                textEl.textContent = Math.round(maxPercentage) + '%';
+            }
+        };
+
+        // Function to save progress via AJAX
+        let progressTimeout;
+        const saveProgressToDatabase = (progress) => {
+            clearTimeout(progressTimeout);
+            progressTimeout = setTimeout(() => {
+                fetch(`/books/${bookId}/progress`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ progress: Math.round(progress) })
+                })
+                .then(response => response.json())
+                .then(data => console.log('Progress saved:', data))
+                .catch(err => console.error('Error saving progress', err));
+            }, 1000); // Debounce for 1 second so it doesn't spam the server when scrolling
+        };
+
+        // Listen for scroll events to update progress (important for 1-page PDFs)
+        document.querySelector('#viewer-container').addEventListener('scroll', () => {
+            if (pdfDoc && pdfDoc.numPages === 1) {
+                updateProgress();
+            }
+        });
 
         // Get Document
         pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {

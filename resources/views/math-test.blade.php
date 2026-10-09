@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="km">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ការធ្វើតេស្តគណិតវិទ្យា - ANONTAK (Math Test Portal)</title>
@@ -15,136 +16,7 @@
 </head>
 <body class="bg-[#fcfdfd] text-slate-800 antialiased font-sans selection:bg-sky-500 selection:text-white flex flex-col min-h-screen">
 
-    <!-- Top Navigation Bar (Identical to Home Page Design) -->
-    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all shadow-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16 sm:h-18">
-                
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <a href="/" class="flex items-center gap-2 group">
-                        <!-- Infinity Spectacles Logo -->
-                        <div class="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-sm group-hover:bg-sky-600 transition-colors">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 12c-2-2.5-4-4-6.5-4a4.5 4.5 0 0 0 0 9c2.5 0 4.5-1.5 6.5-5 2 3.5 4 5 6.5 5a4.5 4.5 0 0 0 0-9c-2.5 0-4.5 1.5-6.5 4z" />
-                            </svg>
-                        </div>
-                        <span class="font-extrabold text-xl tracking-wider text-slate-900 group-hover:text-sky-600 transition-colors" style="font-family: 'Outfit', sans-serif;">
-                            ANONTAK
-                        </span>
-                    </a>
-                </div>
-
-                <!-- Desktop Nav Links with គណិតវិទ្យា Active -->
-                <nav class="hidden lg:flex items-center space-x-1 xl:space-x-2 text-[15px] font-medium text-slate-700">
-                    <a href="/" class="px-3 py-1.5 hover:text-sky-600 transition-colors">
-                        គេហទំព័រ
-                    </a>
-                    <a href="/mathematics" class="px-3 py-1.5 text-sky-600 font-semibold relative after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-sky-600">
-                        គណិតវិទ្យា
-                    </a>
-                    <a href="/books" class="px-3 py-1.5 hover:text-sky-600 transition-colors">
-                        សៀវភៅ
-                    </a>
-                    <a href="/#courses" class="px-3 py-1.5 hover:text-sky-600 transition-colors">
-                        វគ្គសិក្សា
-                    </a>
-                    <a href="/#articles" class="px-3 py-1.5 hover:text-sky-600 transition-colors">
-                        ព័ត៌មានប្រចាំថ្ងៃ
-                    </a>
-                    <a href="/#about" class="px-3 py-1.5 hover:text-sky-600 transition-colors">
-                        អំពីយើង
-                    </a>
-                    <a href="/#contact" class="px-3 py-1.5 hover:text-sky-600 transition-colors">
-                        ទំនាក់ទំនង
-                    </a>
-                </nav>
-
-                <!-- Right Utility Icons & Controls -->
-                <div class="flex items-center space-x-3 sm:space-x-4">
-                    <!-- Search Button -->
-                    <button onclick="openModal('searchModal')" aria-label="Search" class="p-2 text-slate-600 hover:text-sky-600 hover:bg-slate-100 rounded-full transition-colors cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </button>
-
-                    <!-- User Account / Profile -->
-                    <div class="relative">
-                        @auth
-                            <button onclick="toggleUserMenu()" id="userBtn" class="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-full text-slate-700 hover:bg-slate-100 transition-colors bg-white shadow-sm border border-slate-200 cursor-pointer">
-                                <div class="w-7 h-7 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-sm">
-                                    {{ substr(Auth::user()->name, 0, 1) }}
-                                </div>
-                                <span class="text-sm font-medium hidden sm:block">{{ Auth::user()->name }}</span>
-                                <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <!-- Dropdown -->
-                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50 text-sm">
-                                <div class="px-4 py-2 text-xs text-slate-500 font-medium border-b border-slate-100 mb-1">
-                                    គណនីរបស់អ្នក
-                                </div>
-                                <a href="/dashboard" class="block px-4 py-2 hover:bg-slate-50 text-slate-700 font-medium">ផ្ទាំងគ្រប់គ្រង (Dashboard)</a>
-                                <a href="/books" class="block px-4 py-2 hover:bg-slate-50 text-slate-600">សៀវភៅទាំងអស់</a>
-                                <hr class="my-1 border-slate-100">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-medium cursor-pointer">ចាកចេញ (Logout)</button>
-                                </form>
-                            </div>
-                        @else
-                            <button onclick="toggleUserMenu()" id="userBtn" class="flex items-center gap-1.5 p-1.5 sm:px-2 sm:py-1 rounded-full text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                                <svg class="w-3 h-3 text-slate-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <!-- Dropdown -->
-                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50 text-sm">
-                                <a href="/login" class="block px-4 py-2 hover:bg-slate-50 text-slate-700 font-medium">ចូលគណនី (Sign In)</a>
-                                <a href="/register" class="block px-4 py-2 hover:bg-slate-50 text-slate-700 font-medium">ចុះឈ្មោះគណនីថ្មី</a>
-                                <hr class="my-1 border-slate-100">
-                                <a href="#my-library" class="block px-4 py-2 hover:bg-slate-50 text-slate-600">សៀវភៅរបស់ខ្ញុំ</a>
-                            </div>
-                        @endauth
-                    </div>
-
-                    <!-- Language Switcher -->
-                    <div class="flex items-center text-xs font-semibold border border-slate-200 rounded-lg p-0.5 bg-slate-50">
-                        <button onclick="switchLang('km')" id="langKm" class="px-2 py-1 rounded bg-white text-slate-900 shadow-2xs font-bold transition-all">
-                            ភាសាខ្មែរ
-                        </button>
-                        <span class="text-slate-300">/</span>
-                        <button onclick="switchLang('en')" id="langEn" class="px-2 py-1 rounded text-slate-500 hover:text-slate-900 transition-all">
-                            ENG
-                        </button>
-                    </div>
-
-                    <!-- Mobile Hamburger -->
-                    <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg" aria-label="Toggle Navigation">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Menu Container -->
-        <div id="mobileMenu" class="hidden lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-2">
-            <a href="/" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">គេហទំព័រ (Home)</a>
-            <a href="/mathematics" class="block px-3 py-2 rounded-lg text-sky-600 bg-sky-50 font-semibold">គណិតវិទ្យា (Math Test)</a>
-            <a href="/books" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">សៀវភៅ (Books)</a>
-            <a href="/#courses" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">វគ្គសិក្សា (Courses)</a>
-            <a href="/#articles" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">ព័ត៌មានប្រចាំថ្ងៃ (Articles)</a>
-            <a href="/#about" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">អំពីយើង (About)</a>
-            <a href="/#contact" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">ទំនាក់ទំនង (Contact)</a>
-        </div>
-    </header>
+    @include('partials.header')
 
     <!-- SECTION 1: HERO PORTAL (FAITHFUL TO USER MOCKUP WITH 2-STEP FLOW) -->
     <section class="relative py-12 sm:py-16 overflow-hidden border-b border-[#e2d0ca]" style="background-color: #eeddd9;">
@@ -277,88 +149,34 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <!-- Exam Card 1: BacII -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach($exams as $index => $exam)
             <div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-3">
-                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                            ថ្នាក់ទី ១២ (បាក់ឌុប)
+                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200">
+                            {{ $exam->grade_level ?? "ទូទៅ" }}
                         </span>
-                        <span class="text-xs text-slate-400 font-mono">⏱ ៣០ នាទី</span>
+                        <span class="text-xs text-slate-400 font-mono">⏱ {{ $exam->duration_minutes }} នាទី</span>
                     </div>
                     <h4 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                        វិញ្ញាសាត្រៀមប្រឡងបាក់ឌុប
+                        {{ $exam->title }}
                     </h4>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-                        វិញ្ញាសារួមមាន លីមីតនៃអនុគមន៍ ដេរីវេ អាំងតេក្រាល ចំនួនកុំផ្លិច និងធរណីមាត្រក្នុងលំហ។
-                    </p>
+                    <div class="text-xs text-slate-500 mt-2 leading-relaxed line-clamp-2">
+                        {!! strip_tags($exam->description) !!}
+                    </div>
                     <div class="mt-4 flex items-center gap-3 text-xs text-slate-600 border-t border-slate-100 pt-3">
-                        <span>📝 ១០ សំណួរគន្លឹះ</span>
-                        <span>⭐ កម្រិតមធ្យម</span>
+                        <span>📝 {{ $exam->questions->count() }} សំណួរ</span>
+                        <span>🎯 {{ $exam->passing_score }}% ដើម្បីជាប់</span>
                     </div>
                 </div>
-                <button onclick="launchPresetTest('ថ្នាក់ទី ១២', 'មធ្យម')" class="mt-5 w-full py-2.5 rounded-xl bg-slate-900 hover:bg-[#5271e8] text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+                <button onclick="launchExam({{ $index }})" class="mt-5 w-full py-2.5 rounded-xl bg-slate-900 hover:bg-[#5271e8] text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs">
                     <span>ចាប់ផ្ដើមវិញ្ញាសានេះ</span>
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </button>
             </div>
-
-            <!-- Exam Card 2: Olympiad -->
-            <div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                            សិស្សពូកែ (Olympiad)
-                        </span>
-                        <span class="text-xs text-slate-400 font-mono">⏱ ៣០ នាទី</span>
-                    </div>
-                    <h4 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
-                        វិញ្ញាសាសិស្សពូកែទូទាំងប្រទេស
-                    </h4>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-                        លំហាត់វិសមភាព Cauchy, ធរណីមាត្រកម្រិតខ្ពស់, ទ្រឹស្ដីចំនួន និងក្បួនដោះស្រាយពិសេស។
-                    </p>
-                    <div class="mt-4 flex items-center gap-3 text-xs text-slate-600 border-t border-slate-100 pt-3">
-                        <span>📝 ១០ សំណួរគន្លឹះ</span>
-                        <span>🏆 កម្រិតប្រកួតប្រជែង</span>
-                    </div>
-                </div>
-                <button onclick="launchPresetTest('សិស្សពូកែ', 'កម្រិតប្រកួតប្រជែង')" class="mt-5 w-full py-2.5 rounded-xl bg-slate-900 hover:bg-[#5271e8] text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs">
-                    <span>ចាប់ផ្ដើមវិញ្ញាសានេះ</span>
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                </button>
-            </div>
-
-            <!-- Exam Card 3: Grade 9 Foundations -->
-            <div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            អនុវិទ្យាល័យ (ទី៩)
-                        </span>
-                        <span class="text-xs text-slate-400 font-mono">⏱ ៣០ នាទី</span>
-                    </div>
-                    <h4 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
-                        តេស្តមូលដ្ឋានគ្រឹះគណិតវិទ្យាទី ៩
-                    </h4>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-                        សមីការដឺក្រេទី១ និងទី២ ប្រព័ន្ធសមីការ ត្រីកោណមាត្រប្លង់ និងការគណនាផ្ទៃក្រឡា។
-                    </p>
-                    <div class="mt-4 flex items-center gap-3 text-xs text-slate-600 border-t border-slate-100 pt-3">
-                        <span>📝 ១០ សំណួរគន្លឹះ</span>
-                        <span>⭐ កម្រិតមូលដ្ឋាន</span>
-                    </div>
-                </div>
-                <button onclick="launchPresetTest('ថ្នាក់ទី ៩', 'មធ្យម')" class="mt-5 w-full py-2.5 rounded-xl bg-slate-900 hover:bg-[#5271e8] text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs">
-                    <span>ចាប់ផ្ដើមវិញ្ញាសានេះ</span>
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                </button>
-            </div>
-
+            @endforeach
         </div>
-
     </section>
 
     <!-- SECTION 3: TEST-TAKING TIPS -->
@@ -406,67 +224,7 @@
     </section>
 
     <!-- Footer (Identical to Home Page Design) -->
-    <footer class="bg-slate-900 text-slate-400 text-sm border-t border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                
-                <div class="space-y-3">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded bg-sky-500 flex items-center justify-center text-white">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <path d="M12 12c-2-2.5-4-4-6.5-4a4.5 4.5 0 0 0 0 9c2.5 0 4.5-1.5 6.5-5 2 3.5 4 5 6.5 5a4.5 4.5 0 0 0 0-9c-2.5 0-4.5 1.5-6.5 4z" />
-                            </svg>
-                        </div>
-                        <span class="font-bold text-lg text-white" style="font-family: 'Outfit', sans-serif;">ANONTAK</span>
-                    </div>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        គេហទំព័រអប់រំ និងចែករំលែកធនធានគណិតវិទ្យាសម្រាប់សិស្សានុសិស្ស លោកគ្រូអ្នកគ្រូ និងអ្នកស្រឡាញ់ការសិក្សា។
-                    </p>
-                </div>
-
-                <div>
-                    <h5 class="text-white font-semibold text-xs tracking-wider uppercase mb-3">ផ្នែកសំខាន់ៗ</h5>
-                    <ul class="space-y-2 text-xs">
-                        <li><a href="/" class="hover:text-white transition-colors">គេហទំព័រដើម</a></li>
-                        <li><a href="/mathematics" class="text-sky-400 font-semibold hover:text-white transition-colors">ការធ្វើតេស្តគណិតវិទ្យា</a></li>
-                        <li><a href="/categories" class="hover:text-white transition-colors">ផ្នែក និងមេរៀនគណិតវិទ្យា</a></li>
-                        <li><a href="/#books" class="hover:text-white transition-colors">សៀវភៅពុម្ព និងលំហាត់</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h5 class="text-white font-semibold text-xs tracking-wider uppercase mb-3">ឧបករណ៍ និងជំនួយ</h5>
-                    <ul class="space-y-2 text-xs">
-                        <li><button onclick="goToSelectionStep()" class="hover:text-white transition-colors text-left cursor-pointer">ធ្វើតេស្តសាកល្បង</button></li>
-                        <li><button onclick="openVideoPlayer()" class="hover:text-white transition-colors text-left cursor-pointer">វីដេអូណែនាំ</button></li>
-                        <li><a href="/#contact" class="hover:text-white transition-colors">ទំនាក់ទំនងក្រុមការងារ</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h5 class="text-white font-semibold text-xs tracking-wider uppercase mb-3">ទទួលព័ត៌មានថ្មីៗ</h5>
-                    <p class="text-xs text-slate-400 mb-3">ចុះឈ្មោះអ៊ីមែលដើម្បីទទួលបានលំហាត់ថ្មីៗ និងសៀវភៅឥតគិតថ្លៃ៖</p>
-                    <form onsubmit="alert('អរគុណសម្រាប់ការចុះឈ្មោះទទួលព័ត៌មាន!'); return false;" class="flex gap-2">
-                        <input type="email" placeholder="អ៊ីមែលរបស់អ្នក..." required class="bg-slate-800 border border-slate-700 text-white text-xs rounded-lg px-3 py-2 flex-1 focus:outline-hidden focus:border-sky-500">
-                        <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white text-xs px-3 py-2 rounded-lg font-medium transition-colors cursor-pointer">
-                            បញ្ជូន
-                        </button>
-                    </form>
-                </div>
-
-            </div>
-
-            <!-- Bottom Copyright bar (Matching Home Page) -->
-            <div class="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-                <p>2026 All Right Reserved - ANONTAK</p>
-                <div class="flex items-center space-x-4">
-                    <a href="#privacy" class="hover:text-slate-400">គោលការណ៍ឯកជនភាព</a>
-                    <span>&bull;</span>
-                    <a href="#terms" class="hover:text-slate-400">លក្ខខណ្ឌប្រើប្រាស់</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    @include('partials.footer')
 
     <!-- Interactive 10-Question 30-Minute Test Runner Modal -->
     <div id="testRunnerModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
@@ -621,70 +379,101 @@
         }
 
         // Complete 10 Interactive Math Questions
-        const mathQuestions = [
-            { q: "រកតម្លៃនៃ x ក្នុងសមីការ 2x + 6 = 18 :", options: ["x = 4", "x = 6", "x = 8", "x = 12"], correct: 1 },
-            { q: "គណនាលីមីត lim (x→2) [ (x² - 4) / (x - 2) ] :", options: ["0", "2", "4", "មិនកំណត់"], correct: 2 },
-            { q: "រកដេរីវេនៃអនុគមន៍ f(x) = 3x² + 5x - 7 :", options: ["f'(x) = 6x + 5", "f'(x) = 3x + 5", "f'(x) = 6x", "f'(x) = 5x - 7"], correct: 0 },
-            { q: "គណនាអាំងតេក្រាល ∫ (2x + 3) dx :", options: ["x² + 3x + C", "2x² + 3x + C", "x² + C", "2x + C"], correct: 0 },
-            { q: "ត្រីកោណកែងមួយមានជ្រុងជាប់មុំកែងប្រវែង 3cm និង 4cm។ គណនាប្រវែងអ៊ីប៉ូតេនុស :", options: ["5 cm", "6 cm", "7 cm", "25 cm"], correct: 0 },
-            { q: "រកម៉ូឌុលនៃចំនួនកុំផ្លិច z = 3 + 4i :", options: ["|z| = 5", "|z| = 7", "|z| = 25", "|z| = 1"], correct: 0 },
-            { q: "បោះកាក់មួយ ២ ដង។ រកប្រូបាបដែលចេញក្បាល (H) ទាំងពីរដង :", options: ["1/4", "1/2", "3/4", "1"], correct: 0 },
-            { q: "រកផលបូកមុំក្នុងនៃត្រីកោណមួយ :", options: ["90°", "180°", "270°", "360°"], correct: 1 },
-            { q: "ដោះស្រាយវិសមភាព 3x - 5 > 7 :", options: ["x > 4", "x < 4", "x > 12", "x < 12"], correct: 0 },
-            { q: "គណនាតម្លៃនៃ sin(30°) + cos(60°) :", options: ["1/2", "1", "√3/2", "0"], correct: 1 }
-        ];
+        const examsData = @json($exams);
+        let mathQuestions = [];
 
         let currentQIndex = 0;
+        let currentExamId = null;
         let userAnswers = {};
         let timerInterval = null;
         let secondsRemaining = 1800; // 30 minutes
 
-        function startConfiguredTest() {
-            const grade = document.getElementById('gradeSelect').value || 'ថ្នាក់ទី ១២';
-            const difficulty = document.getElementById('difficultySelect').value || 'មធ្យម';
-            
-            document.getElementById('modalBadge').textContent = `${grade} • កម្រិត: ${difficulty}`;
-            document.getElementById('currentTestTitle').textContent = `ការធ្វើតេស្ត ${grade} (${difficulty})`;
-            
-            currentQIndex = 0;
-            userAnswers = {};
-            secondsRemaining = 1800;
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
 
-            document.getElementById('quizContent').classList.remove('hidden');
-            document.getElementById('quizResult').classList.add('hidden');
-            document.getElementById('testRunnerModal').classList.remove('hidden');
+        function launchExam(index) {
+            const exam = examsData[index];
+            currentExamId = exam.id;
+            if (!exam || exam.questions.length === 0) {
+                alert("មិនទាន់មានសំណួរនៅក្នុងវិញ្ញាសានេះទេ!");
+                return;
+            }
+
+            document.getElementById("modalBadge").textContent = `${exam.grade_level || "ទូទៅ"} • ⏱ ${exam.duration_minutes} នាទី`;
+            document.getElementById("currentTestTitle").textContent = exam.title;
+
+            let questions = exam.questions.map(q => {
+                let mappedOptions = q.options.map(opt => ({
+                    html: opt.option_text,
+                    isCorrect: opt.is_correct
+                }));
+                
+                mappedOptions = shuffleArray(mappedOptions);
+                
+                return {
+                    qHtml: q.question_text,
+                    options: mappedOptions.map(o => o.html),
+                    correct: mappedOptions.findIndex(o => o.isCorrect)
+                };
+            });
+
+            mathQuestions = shuffleArray(questions);
+
+            currentQIndex = 0;            currentQIndex = 0;
+            userAnswers = {};
+            secondsRemaining = exam.duration_minutes * 60;
+
+            document.getElementById("quizContent").classList.remove("hidden");
+            document.getElementById("quizResult").classList.add("hidden");
+            document.getElementById("testRunnerModal").classList.remove("hidden");
 
             renderCurrentQuestion();
             startTimer();
         }
 
+        function startConfiguredTest() {
+            if (examsData.length > 0) {
+                launchExam(0); // Launch first available exam for now
+            } else {
+                alert("មិនទាន់មានវិញ្ញាសាទេ!");
+            }
+        }
+
         function renderCurrentQuestion() {
             const q = mathQuestions[currentQIndex];
-            document.getElementById('currentQNum').textContent = currentQIndex + 1;
-            document.getElementById('qBadge').textContent = currentQIndex + 1;
-            document.getElementById('qText').textContent = q.q;
+            document.getElementById("currentQNum").textContent = currentQIndex + 1;
+            document.getElementById("qBadge").textContent = currentQIndex + 1;
+            document.getElementById("qText").innerHTML = q.qHtml;
 
             const progressPct = ((currentQIndex + 1) / mathQuestions.length) * 100;
-            document.getElementById('progressBar').style.width = progressPct + '%';
+            document.getElementById("progressBar").style.width = progressPct + "%";
 
             const answeredCount = Object.keys(userAnswers).length;
-            document.getElementById('answeredCount').textContent = `ឆ្លើយបាន ${answeredCount}/${mathQuestions.length}`;
+            document.getElementById("answeredCount").textContent = `ឆ្លើយបាន ${answeredCount}/${mathQuestions.length}`;
 
             // Render options
-            const optsContainer = document.getElementById('qOptions');
-            optsContainer.innerHTML = '';
+            const optsContainer = document.getElementById("qOptions");
+            optsContainer.innerHTML = "";
             
             q.options.forEach((opt, idx) => {
                 const isSelected = userAnswers[currentQIndex] === idx;
-                const optLabel = ['A', 'B', 'C', 'D'][idx];
+                const optLabel = ["A", "B", "C", "D", "E"][idx] || "*";
 
-                const card = document.createElement('label');
+                const card = document.createElement("label");
                 card.className = `flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                    isSelected ? 'border-indigo-600 bg-indigo-50 shadow-xs' : 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50'
+                    isSelected ? "border-indigo-600 bg-indigo-50 shadow-xs" : "border-slate-200 hover:border-indigo-300 hover:bg-slate-50"
                 }`;
                 card.innerHTML = `
-                    <input type="radio" name="optRadio" value="${idx}" ${isSelected ? 'checked' : ''} onchange="selectOption(${idx})" class="accent-indigo-600 w-4 h-4">
-                    <span class="text-sm font-semibold ${isSelected ? 'text-indigo-900' : 'text-slate-700'}">${optLabel}. ${opt}</span>
+                    <input type="radio" name="optRadio" value="${idx}" ${isSelected ? "checked" : ""} onchange="selectOption(${idx})" class="accent-indigo-600 w-4 h-4 mt-0.5 self-start">
+                    <div class="text-sm font-semibold flex-1 prose-sm max-w-none ${isSelected ? "text-indigo-900" : "text-slate-700"}">
+                        <span class="mr-1">${optLabel}.</span> ${opt}
+                    </div>
                 `;
                 optsContainer.appendChild(card);
             });

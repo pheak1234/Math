@@ -11,19 +11,17 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-white text-slate-900 antialiased font-sans min-h-screen flex items-center justify-center selection:bg-slate-900 selection:text-white">
+<body class="bg-white text-slate-900 antialiased font-sans min-h-screen flex flex-col selection:bg-slate-900 selection:text-white">
+
+    <div class="flex-grow flex items-center justify-center">
 
     <div class="w-full max-w-md px-6 py-12">
         
-        <!-- Minimal Logo -->
+        <!-- Brand Logo -->
         <div class="flex justify-center mb-10">
-            <a href="/" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white transition-transform group-hover:scale-105">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 12c-2-2.5-4-4-6.5-4a4.5 4.5 0 0 0 0 9c2.5 0 4.5-1.5 6.5-5 2 3.5 4 5 6.5 5a4.5 4.5 0 0 0 0-9c-2.5 0-4.5 1.5-6.5 4z" />
-                    </svg>
-                </div>
-                <span class="font-extrabold text-2xl tracking-widest text-slate-900" style="font-family: 'Inter', sans-serif;">ANONTAK</span>
+            <a href="/" class="flex items-center group">
+                <img src="{{ asset('images/anontak-logo-transparent.png') }}" alt="ANONTAK" class="h-16 w-auto object-contain transition-transform group-hover:scale-105">
+                <span class="sr-only">ANONTAK</span>
             </a>
         </div>
 
@@ -32,12 +30,21 @@
             <p class="text-slate-500 text-sm">សូមបញ្ចូលអ៊ីមែលរបស់អ្នកដើម្បីទទួលបានតំណភ្ជាប់</p>
         </div>
 
-        <form onsubmit="return false;" class="space-y-6">
-            
+        @if (session('status'))
+            <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
+            @csrf
             <!-- Email Input -->
             <div class="space-y-2">
                 <label class="block text-sm font-semibold text-slate-700">អ៊ីមែល (Email)</label>
-                <input type="email" required class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-colors text-sm" placeholder="name@example.com">
+                <input type="email" name="email" value="{{ old('email') }}" required autofocus class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-colors text-sm" placeholder="name@example.com">
+                @error('email')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Submit Button -->
@@ -54,6 +61,7 @@
         </p>
 
     </div>
-
+    </div>
+    @include('partials.footer')
 </body>
 </html>
