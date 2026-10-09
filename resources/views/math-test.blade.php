@@ -281,10 +281,21 @@
                 <p class="text-slate-600 text-sm max-w-md mx-auto">
                     អ្នកទទួលបានពិន្ទុ <span id="finalScore" class="font-black text-emerald-600 text-xl">៩០% (៩ / ១០)</span>
                 </p>
+
+                <!-- Save Status Message -->
+                <div id="saveResultStatus" class="max-w-md mx-auto p-3 rounded-xl text-xs font-semibold"></div>
+
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-left text-xs space-y-2 max-w-md mx-auto">
                     <p class="font-bold text-slate-800 text-sm">💡 ការវាយតម្លៃសមត្ថភាព:</p>
                     <p class="text-slate-600">• កម្រិតយល់ដឹងលើរូបមន្តគ្រឹះ និងពិជគណិតល្អប្រសើរណាស់។</p>
                     <p class="text-slate-600">• សូមបន្តអនុវត្តបន្ថែមលើធរណីមាត្រក្នុងលំហ និងអាំងតេក្រាល។</p>
+                </div>
+
+                <div class="pt-2 flex items-center justify-center gap-3">
+                    <a href="/dashboard?tab=exams" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs inline-flex items-center gap-2">
+                        <span>ពិនិត្យលទ្ធផលក្នុងផ្ទាំងគ្រប់គ្រង (Dashboard)</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
                 </div>
             </div>
 
@@ -425,7 +436,7 @@
 
             mathQuestions = shuffleArray(questions);
 
-            currentQIndex = 0;            currentQIndex = 0;
+            currentQIndex = 0;
             userAnswers = {};
             secondsRemaining = exam.duration_minutes * 60;
 
@@ -532,7 +543,7 @@
             }, 1000);
         }
 
-        function submitTestAnswers() {
+        async function submitTestAnswers() {
             clearInterval(timerInterval);
             let score = 0;
             mathQuestions.forEach((q, idx) => {
@@ -544,11 +555,60 @@
             const pct = Math.round((score / mathQuestions.length) * 100);
             document.getElementById('finalScore').textContent = `${pct}% (${score} / ${mathQuestions.length})`;
 
+            const statusEl = document.getElementById('saveResultStatus');
+            if (statusEl) {
+                statusEl.className = 'max-w-md mx-auto p-3 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600';
+                statusEl.textContent = 'កំពុងរក្សាទុកលទ្ធផល...';
+            }
+
             document.getElementById('quizContent').classList.add('hidden');
             document.getElementById('quizResult').classList.remove('hidden');
             document.getElementById('prevQBtn').classList.add('hidden');
             document.getElementById('nextQBtn').classList.add('hidden');
             document.getElementById('submitTestBtn').classList.add('hidden');
+
+            // Send result to server
+            if (currentExamId) {
+                try {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    const response = await fetch('/mathematics/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken || ''
+                        },
+                        body: JSON.stringify({
+                            exam_id: currentExamId,
+                            score: score
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (statusEl) {
+                            statusEl.className = 'max-w-md mx-auto p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200';
+                            statusEl.innerHTML = '✓ លទ្ធផលរបស់អ្នកត្រូវបានកត់ត្រាទុកក្នុងផ្ទាំងគ្រប់គ្រង (Dashboard) រួចរាល់!';
+                        }
+                    } else if (response.status === 401) {
+                        if (statusEl) {
+                            statusEl.className = 'max-w-md mx-auto p-3 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200';
+                            statusEl.innerHTML = '⚠️ អ្នកមិនទាន់បានចូលគណនីទេ! សូម <a href="/login" class="underline font-bold text-amber-900">ចូលគណនី (Login)</a> ដើម្បីរក្សាទុកពិន្ទុរបស់អ្នក។';
+                        }
+                    } else {
+                        if (statusEl) {
+                            statusEl.className = 'max-w-md mx-auto p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200';
+                            statusEl.textContent = 'មិនអាចរក្សាទុកលទ្ធផលបានទេ សូមព្យាយាមម្តងទៀត។';
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error submitting exam result:', e);
+                    if (statusEl) {
+                        statusEl.className = 'max-w-md mx-auto p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200';
+                        statusEl.textContent = 'មានបញ្ហាបណ្តាញក្នុងការរក្សាទុកលទ្ធផល។';
+                    }
+                }
+            }
         }
 
         function closeTestModal() {
