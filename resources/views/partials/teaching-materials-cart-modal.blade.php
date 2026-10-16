@@ -2,27 +2,7 @@
      TEACHING MATERIALS CART & GROUP CHECKOUT
      ========================================== -->
 
-<!-- 1. Floating Cart Button (Pill) -->
-<button type="button" 
-        id="tmFloatingCartBtn" 
-        onclick="window.openTMCartModal()" 
-        aria-label="View Cart"
-        class="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 px-4 sm:px-5 rounded-full shadow-2xl flex items-center gap-2.5 sm:gap-3 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ring-4 ring-white/90">
-    <div class="relative">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-        </svg>
-        <span id="tmFloatingBadge" class="absolute -top-2.5 -right-2.5 bg-white text-orange-600 text-[11px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md border border-orange-200">
-            0
-        </span>
-    </div>
-    <div class="text-left leading-tight hidden xs:block">
-        <span class="text-[10px] text-white/80 block uppercase tracking-wider font-semibold">កន្ត្រកសម្ភារៈ</span>
-        <span id="tmFloatingTotal" class="text-xs sm:text-sm font-black">$0.00</span>
-    </div>
-</button>
-
-<!-- 2. Toast Notification for Cart Actions -->
+<!-- 1. Toast Notification for Cart Actions -->
 <div id="tmCartToast" class="fixed top-20 right-4 sm:right-8 z-50 transform translate-y-[-20px] opacity-0 pointer-events-none transition-all duration-300 max-w-sm w-full">
     <div class="bg-slate-900/95 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">
@@ -343,24 +323,16 @@
 
     window.updateTMCartBadges = function() {
         const cart = window.getTMCart();
-        const totalCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-        const totalPrice = cart.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
-
-        // Floating button badges
-        const floatingBadge = document.getElementById('tmFloatingBadge');
-        if (floatingBadge) floatingBadge.textContent = totalCount;
-
-        const floatingTotal = document.getElementById('tmFloatingTotal');
-        if (floatingTotal) floatingTotal.textContent = '$' + totalPrice.toFixed(2);
+        const totalCount = cart.reduce((sum, item) => sum + (parseInt(item.quantity) || 1), 0);
 
         // Header badge
         const headerBadge = document.getElementById('headerCartBadge');
         if (headerBadge) {
             headerBadge.textContent = totalCount;
             if (totalCount > 0) {
-                headerBadge.classList.remove('hidden');
+                headerBadge.style.display = 'inline-flex';
             } else {
-                headerBadge.classList.add('hidden');
+                headerBadge.style.display = 'none';
             }
         }
 
