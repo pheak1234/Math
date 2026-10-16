@@ -168,27 +168,38 @@
                         </div>
                     @endif
 
-                    <!-- Action Buttons -->
-                    <div class="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-3 items-stretch">
-                        @if($material->price > 0)
-                            <button type="button" onclick="openOrderModal({{ json_encode($material) }})" 
-                                    class="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35 cursor-pointer">
-                                <span class="text-base">🛒</span>
-                                <span>កម្ម៉ង់ទិញឥឡូវនេះ (${{ number_format($material->price, 2) }})</span>
-                            </button>
-                        @else
-                            <button type="button" onclick="openOrderModal({{ json_encode($material) }})" 
-                                    class="flex-1 py-3.5 px-6 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-lg shadow-sky-600/20 hover:shadow-xl cursor-pointer">
-                                <span class="text-base">🛒</span>
-                                <span>កម្ម៉ង់ទិញឥឡូវនេះ (ឥតគិតថ្លៃ)</span>
-                            </button>
-                        @endif
+                    <!-- Quantity Selector & Action Buttons -->
+                    <div class="mt-8 pt-6 border-t border-slate-100 space-y-4">
+                        <div class="flex items-center gap-4">
+                            <label class="text-xs font-bold text-slate-700">ចំនួន (Quantity):</label>
+                            <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
+                                <button type="button" onclick="let q = document.getElementById('detailItemQty'); q.value = Math.max(1, parseInt(q.value||1) - 1);" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-200 text-slate-800 flex items-center justify-center font-black cursor-pointer shadow-2xs">−</button>
+                                <input type="number" id="detailItemQty" value="1" min="1" max="99" class="w-12 text-center text-xs font-bold font-mono bg-transparent outline-hidden">
+                                <button type="button" onclick="let q = document.getElementById('detailItemQty'); q.value = parseInt(q.value||1) + 1;" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-200 text-slate-800 flex items-center justify-center font-black cursor-pointer shadow-2xs">+</button>
+                            </div>
+                        </div>
 
-                        <button type="button" onclick="alert('បានទាញយកមគ្គុទ្ទេសក៍ណែនាំបង្រៀនជាទម្រង់ PDF!');" 
-                                class="py-3.5 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                            <span>📥</span>
-                            <span>ទាញយកមគ្គុទ្ទេសក៍ (PDF)</span>
-                        </button>
+                        <div class="flex flex-col sm:flex-row gap-3 items-stretch">
+                            <button type="button" 
+                                    onclick="let qty = parseInt(document.getElementById('detailItemQty').value) || 1; window.addTMCart({{ json_encode($material) }}, qty, false);" 
+                                    class="flex-1 py-3.5 px-5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-500/25 hover:shadow-lg cursor-pointer">
+                                <span>🛒</span>
+                                <span>+ ថែមទៅកន្ត្រក</span>
+                            </button>
+
+                            <button type="button" 
+                                    onclick="let qty = parseInt(document.getElementById('detailItemQty').value) || 1; window.addTMCart({{ json_encode($material) }}, qty, true);" 
+                                    class="flex-1 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25 hover:shadow-xl cursor-pointer">
+                                <span>⚡</span>
+                                <span>កម្ម៉ង់ទិញឥឡូវនេះ</span>
+                            </button>
+
+                            <button type="button" onclick="alert('បានទាញយកមគ្គុទ្ទេសក៍ណែនាំបង្រៀនជាទម្រង់ PDF!');" 
+                                    class="py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
+                                <span>📥</span>
+                                <span>PDF</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="mt-4">
@@ -288,20 +299,14 @@
 
                                     <div class="border-t {{ $rel->price > 0 ? 'border-amber-100' : 'border-slate-100' }} pt-3 flex items-center gap-2">
                                         <a href="{{ route('teaching-materials.show', $rel) }}" 
-                                           class="flex-1 py-2 px-2 rounded-xl border border-slate-200 hover:border-sky-400 bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-600 text-xs font-semibold transition-colors text-center flex items-center justify-center gap-1">
+                                           class="py-2 px-2.5 rounded-xl border border-slate-200 hover:border-sky-400 bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-600 text-xs font-semibold transition-colors text-center flex items-center justify-center gap-1 shrink-0">
                                             <span>មើលលម្អិត</span>
                                         </a>
-                                        @if($rel->price > 0)
-                                            <button onclick="openOrderModal({{ json_encode($rel) }})" 
-                                                    class="flex-1 py-2 px-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-md shadow-amber-500/20 cursor-pointer">
-                                                🛒 <span>ទិញ</span>
-                                            </button>
-                                        @else
-                                            <button onclick="openOrderModal({{ json_encode($rel) }})" 
-                                                    class="flex-1 py-2 px-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold transition-colors flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
-                                                🛒 <span>កម្ម៉ង់</span>
-                                            </button>
-                                        @endif
+                                        <button type="button" onclick="window.addTMCart({{ json_encode($rel) }})" 
+                                                class="flex-1 py-2 px-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 hover:shadow-lg cursor-pointer">
+                                            <span>🛒</span>
+                                            <span>+ ថែមទៅកន្ត្រក</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

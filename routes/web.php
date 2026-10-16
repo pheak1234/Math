@@ -93,6 +93,7 @@ Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('art
 Route::get('/teaching-materials', [TeachingMaterialController::class, 'index'])->name('teaching-materials.index');
 Route::get('/teaching-materials/{teachingMaterial}', [TeachingMaterialController::class, 'show'])->name('teaching-materials.show');
 Route::post('/teaching-materials/{material}/order', [OrderController::class, 'store'])->name('teaching-materials.order');
+Route::post('/teaching-materials/group-order', [OrderController::class, 'storeGroupOrder'])->name('teaching-materials.group-order');
 
 Route::get('/classes', [ClassroomController::class, 'index'])->name('classes.index');
 Route::get('/classes/{classroom}', [ClassroomController::class, 'show'])->name('classes.show');

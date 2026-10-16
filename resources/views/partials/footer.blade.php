@@ -21,3 +21,6 @@
         
     </div>
 </footer>
+
+@include('partials.teaching-materials-cart-modal')
+

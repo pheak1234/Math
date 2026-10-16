@@ -374,20 +374,14 @@
 
                             <div class="border-t {{ $item->price > 0 ? 'border-amber-100' : 'border-slate-100' }} pt-3 flex items-center gap-2">
                                 <a href="{{ route('teaching-materials.show', $item) }}" 
-                                   class="flex-1 py-2 px-2 rounded-xl border border-slate-200 hover:border-sky-400 bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-600 text-xs font-semibold transition-colors text-center flex items-center justify-center gap-1">
+                                   class="py-2 px-2.5 rounded-xl border border-slate-200 hover:border-sky-400 bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-600 text-xs font-semibold transition-colors text-center flex items-center justify-center gap-1 shrink-0">
                                     <span>មើលលម្អិត</span>
                                 </a>
-                                @if($item->price > 0)
-                                    <button type="button" onclick="openTmOrderModal({{ json_encode($item) }})" 
-                                            class="flex-1 py-2 px-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-md shadow-amber-500/20 cursor-pointer">
-                                        🛒 <span>ទិញ</span>
-                                    </button>
-                                @else
-                                    <button type="button" onclick="openTmOrderModal({{ json_encode($item) }})" 
-                                            class="flex-1 py-2 px-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold transition-colors flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
-                                        🛒 <span>កម្ម៉ង់</span>
-                                    </button>
-                                @endif
+                                <button type="button" onclick="window.addTMCart({{ json_encode($item) }})" 
+                                        class="flex-1 py-2 px-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 hover:shadow-lg cursor-pointer">
+                                    <span>🛒</span>
+                                    <span>+ ថែមទៅកន្ត្រក</span>
+                                </button>
                             </div>
                         </div>
                     </div>

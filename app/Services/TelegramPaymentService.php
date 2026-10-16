@@ -25,6 +25,10 @@ class TelegramPaymentService
 
         $itemTitle = $order->book ? $order->book->title : ($order->teachingMaterial ? $order->teachingMaterial->name : 'ទំនិញ');
         $itemType = $order->book_id ? '📖 សៀវភៅ (Book)' : '📦 សម្ភារៈឧបទេស (Teaching Material)';
+        if (str_contains($order->notes ?? '', 'Group Order')) {
+            $itemType = '📦 សម្ភារៈឧបទេស (Group Order)';
+            $itemTitle = 'កញ្ចប់សម្ភារៈបង្រៀន (Group Items)';
+        }
         $paymentMethod = $order->payment_method === 'khqr' ? 'KHQR (ស្កេនទូទាត់)' : 'បង់ប្រាក់ពេលទទួល (COD)';
 
         $message = "🛒 *ការបញ្ជាទិញថ្មីរង់ចាំការយល់ព្រម (New Order #{$order->order_code})*\n\n";
