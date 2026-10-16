@@ -168,30 +168,20 @@
                         </div>
                     @endif
 
-                    <!-- Catchy Modern Action Bar & Button Redesign -->
-                    <style>
-                        @keyframes tmShimmer {
-                            0% { transform: translateX(-150%) skewX(-20deg); }
-                            40%, 100% { transform: translateX(250%) skewX(-20deg); }
-                        }
-                        .animate-tm-shimmer {
-                            animation: tmShimmer 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-                        }
-                    </style>
-
+                    <!-- Modern High-Converting Action Bar & Buttons -->
                     <div class="mt-8 pt-6 border-t border-slate-100 space-y-4">
                         
                         <!-- Quantity Selector & Live Subtotal Bar -->
-                        <div class="p-4 bg-gradient-to-r from-amber-50/60 via-slate-50 to-orange-50/50 rounded-2xl border border-amber-200/60 flex items-center justify-between gap-4 shadow-xs">
+                        <div class="p-3.5 sm:p-4 bg-slate-50/90 rounded-2xl border border-slate-200/90 flex items-center justify-between gap-4 shadow-2xs">
                             <div class="flex items-center gap-3">
                                 <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                                     <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
-                                    <span>ចំនួន (Quantity):</span>
+                                    <span>ចំនួន (Qty):</span>
                                 </span>
-                                <div class="flex items-center bg-white rounded-xl p-1 border border-slate-200 shadow-xs">
+                                <div class="flex items-center bg-white rounded-xl p-1 border border-slate-200 shadow-2xs">
                                     <button type="button" 
                                             onclick="let q = document.getElementById('detailItemQty'); q.value = Math.max(1, parseInt(q.value||1) - 1); updateDetailLineTotal();" 
-                                            class="w-8 h-8 rounded-lg bg-slate-50 hover:bg-amber-500 hover:text-white text-slate-700 flex items-center justify-center font-black text-sm transition-all cursor-pointer active:scale-90">
+                                            class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-amber-500 hover:text-white text-slate-700 flex items-center justify-center font-black text-sm transition-all cursor-pointer active:scale-90">
                                         −
                                     </button>
                                     <input type="number" 
@@ -204,52 +194,41 @@
                                            class="w-12 text-center text-sm font-black font-mono text-slate-900 bg-transparent outline-hidden">
                                     <button type="button" 
                                             onclick="let q = document.getElementById('detailItemQty'); q.value = Math.min(99, parseInt(q.value||1) + 1); updateDetailLineTotal();" 
-                                            class="w-8 h-8 rounded-lg bg-slate-50 hover:bg-amber-500 hover:text-white text-slate-700 flex items-center justify-center font-black text-sm transition-all cursor-pointer active:scale-90">
+                                            class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-amber-500 hover:text-white text-slate-700 flex items-center justify-center font-black text-sm transition-all cursor-pointer active:scale-90">
                                         +
                                     </button>
                                 </div>
                             </div>
 
                             <div class="text-right">
-                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">ទឹកប្រាក់សរុប (Subtotal)</span>
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">សរុប (Subtotal)</span>
                                 <span id="detailLineTotal" class="text-lg sm:text-xl font-black text-amber-600 font-mono tracking-tight">
                                     {{ $material->price > 0 ? '$' . number_format($material->price, 2) : 'Free' }}
                                 </span>
                             </div>
                         </div>
 
-                        <!-- 2 Catchy Main Action Buttons (High Contrast & Shimmer) -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                        <!-- 2 Catchy Main Action Buttons -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 pt-1">
                             
-                            <!-- 1. Primary CTA: Buy Now (Vibrant Flame Gradient + Live Shimmer) -->
-                            <button type="button" 
-                                    onclick="let qty = parseInt(document.getElementById('detailItemQty').value) || 1; window.addTMCart({{ json_encode($material) }}, qty, true);" 
-                                    class="relative overflow-hidden w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:via-orange-600 hover:to-rose-600 text-white transition-all duration-300 flex items-center justify-center gap-3 shadow-xl shadow-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/50 hover:-translate-y-1 active:translate-y-0 cursor-pointer group">
-                                
-                                <!-- Shimmer beam -->
-                                <div class="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent pointer-events-none animate-tm-shimmer"></div>
-                                
-                                <span class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-base shadow-inner group-hover:scale-110 transition-transform shrink-0">
-                                    ⚡
-                                </span>
-                                <div class="text-left leading-tight">
-                                    <span class="block text-[10px] uppercase font-extrabold tracking-wider text-amber-100">ទិញភ្លាមៗ • ដឹកជូនរហ័ស</span>
-                                    <span class="block text-sm sm:text-base font-black">កម្ម៉ង់ទិញឥឡូវនេះ (Buy Now)</span>
-                                </div>
-                            </button>
-
-                            <!-- 2. Secondary CTA: Add to Cart (Deep Obsidian Luxury Dark + Gold Accent) -->
+                            <!-- 1. Secondary CTA: Add to Cart (Warm Amber Pill) -->
                             <button type="button" 
                                     onclick="let qty = parseInt(document.getElementById('detailItemQty').value) || 1; window.addTMCart({{ json_encode($material) }}, qty, false);" 
-                                    class="relative w-full py-4 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl hover:shadow-slate-900/30 hover:-translate-y-1 active:translate-y-0 cursor-pointer border border-slate-700/80 hover:border-amber-400/80 group">
-                                
-                                <span class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-base group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all shrink-0">
-                                    🛒
-                                </span>
-                                <div class="text-left leading-tight">
-                                    <span class="block text-[10px] uppercase font-extrabold tracking-wider text-slate-400 group-hover:text-amber-300 transition-colors">ប្រមូលទំនិញរួមគ្នា</span>
-                                    <span class="block text-sm sm:text-base font-black text-white group-hover:text-amber-400 transition-colors">+ ថែមទៅកន្ត្រក (Add to Cart)</span>
-                                </div>
+                                    class="group w-full py-3.5 sm:py-4 px-5 rounded-2xl bg-amber-50 hover:bg-amber-100/90 text-amber-900 hover:text-amber-950 font-extrabold text-sm sm:text-base border-2 border-amber-400 hover:border-amber-500 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer">
+                                <svg class="w-5 h-5 text-amber-600 group-hover:scale-110 transition-transform shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                <span class="whitespace-nowrap tracking-wide">+ ថែមទៅកន្ត្រក</span>
+                            </button>
+
+                            <!-- 2. Primary CTA: Buy Now (Vibrant Sunset Flame Gradient) -->
+                            <button type="button" 
+                                    onclick="let qty = parseInt(document.getElementById('detailItemQty').value) || 1; window.addTMCart({{ json_encode($material) }}, qty, true);" 
+                                    class="group w-full py-3.5 sm:py-4 px-5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:via-orange-600 hover:to-amber-700 text-white font-black text-sm sm:text-base shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer ring-1 ring-white/20">
+                                <svg class="w-5 h-5 text-amber-100 group-hover:scale-110 transition-transform shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="whitespace-nowrap tracking-wide">ទិញឥឡូវនេះ</span>
                             </button>
 
                         </div>
