@@ -132,7 +132,7 @@
                                         <h3 class="font-bold text-slate-800 text-base line-clamp-1">{{ $book->title }}</h3>
                                         <p class="text-slate-500 text-xs mb-4 mt-0.5">ដោយ {{ $book->author }}</p>
                                         <div class="mt-auto">
-                                            <a href="{{ route('books.show', $book) }}" class="block text-center w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-sky-600 transition-colors">
+                                            <a href="{{ route('books.read', $book) }}" class="block text-center w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-sky-600 transition-colors">
                                                 អានបន្ត
                                             </a>
                                         </div>

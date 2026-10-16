@@ -86,7 +86,7 @@ Route::get('/classes/{classroom}', [ClassroomController::class, 'show'])->name('
 
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 
-Route::get('/read-book/{book}', [BookController::class, 'read'])->middleware('auth')->name('books.read');
+Route::get('/read-book/{book?}', [BookController::class, 'read'])->name('books.read');
 Route::post('/books/{book}/progress', [BookController::class, 'updateProgress'])->middleware('auth')->name('books.progress');
 
 use App\Http\Controllers\Auth\NewPasswordController;

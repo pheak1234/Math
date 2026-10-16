@@ -136,7 +136,7 @@
                     <div class="pt-8 flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start border-t border-slate-200/60">
                         
                         <!-- Read Preview Button -->
-                        <a href="/read-book" target="_blank" class="w-full sm:w-auto px-8 py-3.5 rounded-full text-slate-600 font-semibold text-sm border border-slate-200 bg-white hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm flex items-center justify-center gap-2">
+                        <a href="{{ route('books.read', $book) }}" target="_blank" class="w-full sm:w-auto px-8 py-3.5 rounded-full text-slate-600 font-semibold text-sm border border-slate-200 bg-white hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                             អានសៀវភៅគំរូ
                         </a>
@@ -145,7 +145,7 @@
                             <a href="{{ route('login') }}" class="w-full sm:w-auto px-10 py-3.5 rounded-full text-white font-bold text-sm shadow-[0_8px_15px_-3px_rgba(37,99,235,0.3)] transition-all hover:-translate-y-1 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center gap-2">ចូលគណនីដើម្បីទិញសៀវភៅ</a>
                         @else
                             @if($inLibrary)
-                                <a href="/dashboard" class="w-full sm:w-auto px-10 py-3.5 rounded-full text-white font-bold text-sm shadow-md transition-all hover:-translate-y-1 bg-green-600 flex items-center justify-center gap-2">ចូលអានសៀវភៅនេះ</a>
+                                <a href="{{ route('books.read', $book) }}" class="w-full sm:w-auto px-10 py-3.5 rounded-full text-white font-bold text-sm shadow-md transition-all hover:-translate-y-1 bg-green-600 flex items-center justify-center gap-2">ចូលអានសៀវភៅនេះ</a>
                             @else
                                 @if($book->price == 0)
                                     <form method="POST" action="{{ route('books.add', $book->id) }}" class="w-full sm:w-auto">

@@ -93,18 +93,28 @@ class BookController extends Controller
         return back()->with('success', 'អរគុណសម្រាប់ការវាយតម្លៃ និងមតិយោបល់របស់អ្នក!');
     }
 
-    public function read(Book $book)
+    public function read(?Book $book = null)
     {
-        $user = Auth::user();
-
-        // Ensure user actually owns or has access to the book. For now, assuming they do if they reach here,
-        // but it's good practice to check if it's attached.
-        if (! $user->books()->where('book_id', $book->id)->exists() && $book->price > 0 && ! $user->orders()->where('book_id', $book->id)->where('status', 'completed')->exists()) {
-            return redirect()->route('books.show', $book)->with('error', 'អ្នកមិនទាន់មានសិទ្ធិអានសៀវភៅនេះទេ។');
+        if (! $book || ! $book->exists) {
+            $book = Book::first() ?? new Book([
+                'id' => 1,
+                'title' => 'សៀវភៅគំរូ (Sample Book)',
+                'author' => 'ANONTAK Math',
+                'price' => 0,
+            ]);
         }
 
-        $userBook = $user->books()->where('book_id', $book->id)->first();
-        $currentProgress = $userBook ? $userBook->pivot->progress : 0;
+        $currentProgress = 0;
+
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($book->exists && ! $user->books()->where('book_id', $book->id)->exists() && $book->price > 0 && ! $user->orders()->where('book_id', $book->id)->where('status', 'completed')->exists()) {
+                return redirect()->route('books.show', $book)->with('error', 'អ្នកមិនទាន់មានសិទ្ធិអានសៀវភៅនេះទេ។');
+            }
+
+            $userBook = $book->exists ? $user->books()->where('book_id', $book->id)->first() : null;
+            $currentProgress = $userBook ? $userBook->pivot->progress : 0;
+        }
 
         return view('read-book', compact('book', 'currentProgress'));
     }
