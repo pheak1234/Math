@@ -302,7 +302,7 @@
                 <div class="rounded-2xl transition-all duration-300 flex flex-col group overflow-hidden hover:-translate-y-1.5 {{ $item->price > 0 ? 'bg-gradient-to-b from-amber-500/[0.08] via-amber-500/[0.02] to-white border-2 border-amber-300 hover:border-amber-500 shadow-md shadow-amber-500/10 hover:shadow-xl hover:shadow-amber-500/25 ring-1 ring-amber-400/20' : 'bg-white border border-slate-200 shadow-2xs hover:shadow-lg hover:border-sky-300' }}">
                     
                     <!-- Item Image Preview -->
-                    <div class="aspect-square w-full bg-slate-50 p-6 flex items-center justify-center relative overflow-hidden border-b {{ $item->price > 0 ? 'border-amber-100' : 'border-slate-100' }}">
+                    <a href="{{ route('teaching-materials.show', $item) }}" class="aspect-square w-full bg-slate-50 p-6 flex items-center justify-center relative overflow-hidden border-b {{ $item->price > 0 ? 'border-amber-100' : 'border-slate-100' }} block">
                         @php
                             if ($item->image) {
                                 $matImg = str_starts_with($item->image, '/') || str_starts_with($item->image, 'http') 
@@ -333,7 +333,7 @@
                                 ពេញនិយម
                             </span>
                         @endif
-                    </div>
+                    </a>
 
                     <!-- Item Content -->
                     <div class="p-5 flex-1 flex flex-col">
@@ -345,7 +345,9 @@
                         </div>
 
                         <h3 class="font-bold text-slate-900 text-sm leading-snug group-hover:text-sky-600 transition-colors line-clamp-2">
-                            {{ $item->name }}
+                            <a href="{{ route('teaching-materials.show', $item) }}">
+                                {{ $item->name }}
+                            </a>
                         </h3>
 
                         <p class="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">
@@ -370,16 +372,20 @@
                                 </div>
                             @endif
 
-                            <div class="border-t {{ $item->price > 0 ? 'border-amber-100' : 'border-slate-100' }} pt-3">
+                            <div class="border-t {{ $item->price > 0 ? 'border-amber-100' : 'border-slate-100' }} pt-3 flex items-center gap-2">
+                                <a href="{{ route('teaching-materials.show', $item) }}" 
+                                   class="flex-1 py-2 px-2 rounded-xl border border-slate-200 hover:border-sky-400 bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-600 text-xs font-semibold transition-colors text-center flex items-center justify-center gap-1">
+                                    <span>មើលលម្អិត</span>
+                                </a>
                                 @if($item->price > 0)
                                     <button type="button" onclick="openTmOrderModal({{ json_encode($item) }})" 
-                                            class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 cursor-pointer">
-                                        🛒 <span>ទិញឥឡូវនេះ (${{ number_format($item->price, 2) }})</span>
+                                            class="flex-1 py-2 px-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-md shadow-amber-500/20 cursor-pointer">
+                                        🛒 <span>ទិញ</span>
                                     </button>
                                 @else
                                     <button type="button" onclick="openTmOrderModal({{ json_encode($item) }})" 
-                                            class="w-full py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer">
-                                        🛒 <span>កម្ម៉ង់ទិញឥឡូវនេះ</span>
+                                            class="flex-1 py-2 px-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold transition-colors flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
+                                        🛒 <span>កម្ម៉ង់</span>
                                     </button>
                                 @endif
                             </div>
