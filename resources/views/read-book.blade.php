@@ -163,8 +163,13 @@
             
             <!-- Dynamic Watermark Overlay -->
             <div class="watermark-container">
+                @php
+                    $watermarkText = Auth::check() 
+                        ? (Auth::user()->name . ' | ' . (Auth::user()->phone ?? Auth::user()->email))
+                        : 'ANONTAK MATH | Sample Preview';
+                @endphp
                 @for ($i = 0; $i < 20; $i++)
-                    <div class="watermark-text">{{ Auth::user()->name }} | {{ Auth::user()->phone ?? Auth::user()->email }}</div>
+                    <div class="watermark-text">{{ $watermarkText }}</div>
                 @endfor
             </div>
         </div>
