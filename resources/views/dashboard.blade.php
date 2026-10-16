@@ -39,7 +39,7 @@
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
         
         @php
-            $activeTab = $errors->any() ? 'profile' : ($tab ?? 'books');
+            $activeTab = (isset($errors) && $errors->any()) ? 'profile' : ($tab ?? 'books');
         @endphp
 
         <div class="flex flex-col md:flex-row gap-8">
