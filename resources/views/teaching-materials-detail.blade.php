@@ -168,45 +168,80 @@
                         </div>
                     @endif
 
-                    <!-- Quantity Selector & Action Buttons -->
+                    <!-- Redesigned Quantity Selector & Modern Action Bar -->
                     <div class="mt-8 pt-6 border-t border-slate-100 space-y-4">
-                        <div class="flex items-center gap-4">
-                            <label class="text-xs font-bold text-slate-700">ចំនួន (Quantity):</label>
-                            <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
-                                <button type="button" onclick="let q = document.getElementById('detailItemQty'); q.value = Math.max(1, parseInt(q.value||1) - 1);" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-200 text-slate-800 flex items-center justify-center font-black cursor-pointer shadow-2xs">−</button>
-                                <input type="number" id="detailItemQty" value="1" min="1" max="99" class="w-12 text-center text-xs font-bold font-mono bg-transparent outline-hidden">
-                                <button type="button" onclick="let q = document.getElementById('detailItemQty'); q.value = parseInt(q.value||1) + 1;" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-200 text-slate-800 flex items-center justify-center font-black cursor-pointer shadow-2xs">+</button>
+                        
+                        <!-- Quantity & Live Subtotal Card -->
+                        <div class="p-3.5 bg-slate-50/90 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+                                    <span>ចំនួន (Qty):</span>
+                                </span>
+                                <div class="flex items-center bg-white rounded-xl p-1 border border-slate-200 shadow-2xs">
+                                    <button type="button" 
+                                            onclick="let q = document.getElementById('detailItemQty'); q.value = Math.max(1, parseInt(q.value||1) - 1); updateDetailLineTotal();" 
+                                            class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-black text-sm transition-colors cursor-pointer active:scale-95">
+                                        −
+                                    </button>
+                                    <input type="number" 
+                                           id="detailItemQty" 
+                                           value="1" 
+                                           min="1" 
+                                           max="99" 
+                                           onchange="updateDetailLineTotal()" 
+                                           onkeyup="updateDetailLineTotal()" 
+                                           class="w-12 text-center text-xs font-extrabold font-mono text-slate-900 bg-transparent outline-hidden">
+                                    <button type="button" 
+                                            onclick="let q = document.getElementById('detailItemQty'); q.value = Math.min(99, parseInt(q.value||1) + 1); updateDetailLineTotal();" 
+                                            class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-black text-sm transition-colors cursor-pointer active:scale-95">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="text-right">
+                                <span class="text-[10px] text-slate-400 block font-medium">ទឹកប្រាក់សរុប (Subtotal)</span>
+                                <span id="detailLineTotal" class="text-base sm:text-lg font-black text-amber-600 font-mono">
+                                    {{ $material->price > 0 ? '$' . number_format($material->price, 2) : 'Free' }}
+                                </span>
                             </div>
                         </div>
 
-                        <div class="flex flex-col sm:flex-row gap-3 items-stretch">
-                            <button type="button" 
-                                    onclick="let qty = parseInt(document.getElementById('detailItemQty').value) || 1; window.addTMCart({{ json_encode($material) }}, qty, false);" 
-                                    class="flex-1 py-3.5 px-5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-500/25 hover:shadow-lg cursor-pointer">
-                                <span>🛒</span>
-                                <span>+ ថែមទៅកន្ត្រក</span>
-                            </button>
-
+                        <!-- Primary & Secondary CTA Buttons -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <!-- Buy Now / Checkout Button -->
                             <button type="button" 
                                     onclick="let qty = parseInt(document.getElementById('detailItemQty').value) || 1; window.addTMCart({{ json_encode($material) }}, qty, true);" 
-                                    class="flex-1 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25 hover:shadow-xl cursor-pointer">
-                                <span>⚡</span>
-                                <span>កម្ម៉ង់ទិញឥឡូវនេះ</span>
+                                    class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:via-orange-600 hover:to-amber-700 text-white font-extrabold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2.5 shadow-xl shadow-orange-500/25 hover:shadow-2xl hover:shadow-orange-500/35 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer group">
+                                <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">⚡</span>
+                                <span>កម្ម៉ង់ទិញឥឡូវនេះ (Buy Now)</span>
                             </button>
 
-                            <button type="button" onclick="alert('បានទាញយកមគ្គុទ្ទេសក៍ណែនាំបង្រៀនជាទម្រង់ PDF!');" 
-                                    class="py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
-                                <span>📥</span>
-                                <span>PDF</span>
+                            <!-- Add to Cart Button -->
+                            <button type="button" 
+                                    onclick="let qty = parseInt(document.getElementById('detailItemQty').value) || 1; window.addTMCart({{ json_encode($material) }}, qty, false);" 
+                                    class="w-full py-4 px-6 rounded-2xl border-2 border-amber-500 bg-amber-50/80 hover:bg-amber-500 text-amber-700 hover:text-white font-extrabold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2.5 shadow-xs hover:shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer group">
+                                <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                <span>+ ថែមទៅកន្ត្រក (Add to Cart)</span>
                             </button>
                         </div>
-                    </div>
 
-                    <div class="mt-4">
-                        <a href="{{ route('teaching-materials.index') }}" class="text-xs text-slate-500 hover:text-sky-600 font-semibold inline-flex items-center gap-1 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                            <span>ត្រឡប់ទៅបញ្ជីសម្ភារៈបង្រៀនទាំងអស់</span>
-                        </a>
+                        <!-- Supplementary Links & PDF Action -->
+                        <div class="flex flex-col sm:flex-row gap-3 pt-1">
+                            <button type="button" onclick="alert('បានទាញយកមគ្គុទ្ទេសក៍ណែនាំបង្រៀនជាទម្រង់ PDF!');" 
+                                    class="flex-1 py-3 px-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-2xs">
+                                <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>ទាញយកមគ្គុទ្ទេសក៍ណែនាំបង្រៀន (PDF Guide)</span>
+                            </button>
+                            <a href="{{ route('teaching-materials.index') }}" 
+                               class="py-3 px-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shrink-0 shadow-2xs">
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                                <span>បញ្ជីសម្ភារៈទាំងអស់</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -577,6 +612,16 @@
                 closeOrderModal();
             }
         });
+
+        function updateDetailLineTotal() {
+            const qtyInput = document.getElementById('detailItemQty');
+            const totalEl = document.getElementById('detailLineTotal');
+            if (!qtyInput || !totalEl) return;
+            const qty = Math.max(1, parseInt(qtyInput.value) || 1);
+            const unitPrice = {{ (float) ($material->price ?? 0) }};
+            const total = qty * unitPrice;
+            totalEl.textContent = unitPrice > 0 ? '$' + total.toFixed(2) : 'Free';
+        }
     </script>
 </body>
 </html>
