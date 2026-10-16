@@ -234,13 +234,19 @@
                     </div>
 
                     <!-- Submit Actions -->
-                    <div class="flex gap-3 pt-3 border-t border-slate-100">
-                        <button type="button" onclick="window.closeTMCartModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors cursor-pointer">
+                    <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 pt-4 border-t border-slate-100">
+                        <button type="button" 
+                                onclick="window.closeTMCartModal()" 
+                                class="w-full sm:w-1/3 py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs sm:text-sm font-bold transition-all cursor-pointer text-center active:scale-[0.98]">
                             បន្តរើសសម្ភារៈ
                         </button>
-                        <button type="submit" id="tmSubmitGroupOrderBtn" class="flex-2 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-lg shadow-amber-500/25 cursor-pointer flex items-center justify-center gap-2">
-                            <span>🛒</span>
-                            <span id="tmSubmitBtnText">បញ្ជាក់ការកម្ម៉ង់ទិញជាកញ្ចប់</span>
+                        <button type="submit" 
+                                id="tmSubmitGroupOrderBtn" 
+                                class="w-full sm:w-2/3 py-3.5 px-5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:via-orange-600 hover:to-amber-700 text-white rounded-2xl text-xs sm:text-sm font-black transition-all shadow-lg shadow-orange-500/25 hover:shadow-orange-500/35 cursor-pointer flex items-center justify-center gap-2 active:scale-[0.98]">
+                            <svg class="w-4 h-4 text-white shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span id="tmSubmitBtnText" class="truncate">បញ្ជាក់ការកម្ម៉ង់</span>
                         </button>
                     </div>
                 </form>
@@ -451,7 +457,9 @@
         if (grandTotalEl) grandTotalEl.textContent = '$' + subtotal.toFixed(2);
 
         const submitBtnText = document.getElementById('tmSubmitBtnText');
-        if (submitBtnText) submitBtnText.textContent = 'បញ្ជាក់ការកម្ម៉ង់ទិញរួមគ្នា ($' + subtotal.toFixed(2) + ')';
+        if (submitBtnText) {
+            submitBtnText.textContent = 'បញ្ជាក់ការកម្ម៉ង់ (' + (subtotal > 0 ? '$' + subtotal.toFixed(2) : 'Free') + ')';
+        }
 
         // Hidden input for backend form
         const cartInput = document.getElementById('tmGroupCartItemsInput');
