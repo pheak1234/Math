@@ -16,6 +16,18 @@
 <body class="bg-[#fcfdfd] text-slate-800 antialiased font-sans selection:bg-sky-500 selection:text-white">
 
     @include('partials.header')
+    
+    @if(session('success'))
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+            <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-emerald-800 text-sm shadow-xs">
+                <div class="flex items-center gap-2">
+                    <span class="text-emerald-600 font-bold text-lg">✓</span>
+                    <span>{{ session('success') }}</span>
+                </div>
+                <button type="button" onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700 font-bold cursor-pointer">✕</button>
+            </div>
+        </div>
+    @endif
 
     <!-- 1. Hero Chalkboard Banner with Interactive Slider -->
     <section class="relative w-full overflow-hidden bg-slate-950 group">
@@ -271,37 +283,114 @@
 
     <!-- 6. Teaching Equipment & Materials (សំភារៈបង្រៀន) -->
     <section id="teaching-materials" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 scroll-mt-20">
-        <div class="mb-8">
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                សំភារៈបង្រៀន
-            </h2>
-            <p class="text-sm text-slate-500 mt-1">ឧបករណ៍ និងសម្ភារៈជំនួយការបង្រៀន និងការរៀនគណិតវិទ្យាជាក់ស្ដែង</p>
+        <div class="mb-8 flex items-end justify-between">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    សំភារៈបង្រៀន
+                </h2>
+                <p class="text-sm text-slate-500 mt-1">ឧបករណ៍ និងសម្ភារៈជំនួយការបង្រៀន និងការរៀនគណិតវិទ្យាជាក់ស្ដែង</p>
+            </div>
+            <a href="{{ route('teaching-materials.index') }}" class="text-xs sm:text-sm font-semibold text-sky-600 hover:text-sky-700 flex items-center gap-1">
+                <span>មើលទាំងអស់</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
         </div>
 
-        <!-- 5 Tool Cards (Exact items from the screenshot) -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
-            
-            @foreach($recentMaterials as $material)
-            <div class="tool-card bg-white rounded-xl border border-slate-200/80 p-3 shadow-xs flex flex-col items-center group cursor-pointer" onclick="viewTool('{{ addslashes($material->name) }}', '{{ addslashes($material->description ?? '') }}')">
-                <div class="w-full aspect-square rounded-lg overflow-hidden bg-slate-50 flex items-center justify-center p-2 relative">
-                    @php
-                        if ($material->image) {
-                            $matImg = str_starts_with($material->image, '/') || str_starts_with($material->image, 'http') 
-                                ? $material->image 
-                                : Storage::url($material->image);
-                        } else {
-                            $matImg = '/images/tool_books.svg';
-                        }
-                    @endphp
-                    <img src="{{ $matImg }}" alt="{{ $material->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
-                    @if($material->is_featured)
-                        <span class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-sky-500 text-white">ពិសេស</span>
-                    @endif
-                </div>
-                <span class="mt-2.5 text-xs font-semibold text-slate-700 text-center line-clamp-1 group-hover:text-sky-600 transition-colors">{{ $material->name }}</span>
-            </div>
-            @endforeach
+        <!-- 4 Teaching Material Cards Matching teaching-materials.blade.php -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @forelse($recentMaterials as $item)
+                <div class="rounded-2xl transition-all duration-300 flex flex-col group overflow-hidden hover:-translate-y-1.5 {{ $item->price > 0 ? 'bg-gradient-to-b from-amber-500/[0.08] via-amber-500/[0.02] to-white border-2 border-amber-300 hover:border-amber-500 shadow-md shadow-amber-500/10 hover:shadow-xl hover:shadow-amber-500/25 ring-1 ring-amber-400/20' : 'bg-white border border-slate-200 shadow-2xs hover:shadow-lg hover:border-sky-300' }}">
+                    
+                    <!-- Item Image Preview -->
+                    <div class="aspect-square w-full bg-slate-50 p-6 flex items-center justify-center relative overflow-hidden border-b {{ $item->price > 0 ? 'border-amber-100' : 'border-slate-100' }}">
+                        @php
+                            if ($item->image) {
+                                $matImg = str_starts_with($item->image, '/') || str_starts_with($item->image, 'http') 
+                                    ? $item->image 
+                                    : Storage::url($item->image);
+                            } else {
+                                $matImg = '/images/tool_ruler.svg';
+                            }
+                        @endphp
+                        <img src="{{ $matImg }}" 
+                             alt="{{ $item->name }}" 
+                             class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 filter drop-shadow-sm" />
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-3 left-3 flex items-center gap-1.5">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white text-slate-700 shadow-xs border border-slate-200">
+                                {{ $item->category }}
+                            </span>
+                            @if($item->price > 0)
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white shadow-md shadow-amber-500/30 flex items-center gap-1 ring-1 ring-white">
+                                    <span>👑</span> <span>PREMIUM</span>
+                                </span>
+                            @endif
+                        </div>
+                        
+                        @if($item->is_featured)
+                            <span class="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-xs">
+                                ពេញនិយម
+                            </span>
+                        @endif
+                    </div>
 
+                    <!-- Item Content -->
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium mb-1.5">
+                            <svg class="w-3.5 h-3.5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <span>{{ $item->grade_level }}</span>
+                        </div>
+
+                        <h3 class="font-bold text-slate-900 text-sm leading-snug group-hover:text-sky-600 transition-colors line-clamp-2">
+                            {{ $item->name }}
+                        </h3>
+
+                        <p class="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">
+                            {{ $item->description }}
+                        </p>
+
+                        @if($item->specifications)
+                            <div class="mt-3 mb-2 p-2 bg-slate-50 rounded-lg text-[11px] text-slate-600 line-clamp-2 border border-slate-100 font-mono">
+                                {{ $item->specifications }}
+                            </div>
+                        @endif
+
+                        <div class="mt-auto pt-3">
+                            @if($item->price > 0)
+                                <div class="text-amber-600 font-extrabold text-base mb-3 flex items-center gap-1.5">
+                                    <span>${{ number_format($item->price, 2) }}</span>
+                                    <span class="text-[10px] uppercase tracking-wider text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full font-black border border-amber-200">PRO</span>
+                                </div>
+                            @else
+                                <div class="text-emerald-600 font-bold mb-3 flex items-center gap-1">
+                                    <span>🎁 ឥតគិតថ្លៃ (Free)</span>
+                                </div>
+                            @endif
+
+                            <div class="border-t {{ $item->price > 0 ? 'border-amber-100' : 'border-slate-100' }} pt-3">
+                                @if($item->price > 0)
+                                    <button type="button" onclick="openTmOrderModal({{ json_encode($item) }})" 
+                                            class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 cursor-pointer">
+                                        🛒 <span>ទិញឥឡូវនេះ (${{ number_format($item->price, 2) }})</span>
+                                    </button>
+                                @else
+                                    <button type="button" onclick="openTmOrderModal({{ json_encode($item) }})" 
+                                            class="w-full py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer">
+                                        🛒 <span>កម្ម៉ង់ទិញឥឡូវនេះ</span>
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full py-12 text-center bg-white rounded-2xl border border-slate-200">
+                    <p class="text-slate-500 text-sm">មិនទាន់មានសម្ភារៈបង្រៀននៅឡើយទេ</p>
+                </div>
+            @endforelse
         </div>
     </section>
 
@@ -565,18 +654,133 @@
         </div>
     </div>
 
-    <!-- MODAL 7: Tool Details Modal -->
-    <div id="toolModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 relative text-center">
-            <button onclick="closeModal('toolModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 cursor-pointer">
+    <!-- Teaching Material Order Modal -->
+    <div id="tmOrderModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 relative">
+            <button type="button" onclick="closeTmOrderModal()" aria-label="Close" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 cursor-pointer">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
-            <div class="w-14 h-14 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
+            
+            <h3 class="text-lg font-bold text-slate-900 mb-1">បញ្ជាក់ការកម្ម៉ង់ទិញ</h3>
+            
+            <div class="flex items-center gap-4 mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <img id="tmOrderImg" src="" class="w-16 h-16 object-cover rounded-xl border border-slate-200">
+                <div>
+                    <h4 id="tmOrderTitle" class="font-bold text-slate-800 text-sm"></h4>
+                    <p id="tmOrderPriceDisplay" class="text-sky-600 font-bold text-xs mt-1"></p>
+                </div>
             </div>
-            <h3 id="toolModalTitle" class="font-bold text-slate-900 text-base"></h3>
-            <p id="toolModalDesc" class="text-xs text-slate-500 mt-2 leading-relaxed"></p>
-            <button onclick="closeModal('toolModal')" class="mt-4 w-full py-2 bg-slate-900 text-white text-xs font-semibold rounded-lg">បិទ</button>
+
+            <form id="tmOrderForm" method="POST" action="" enctype="multipart/form-data" class="space-y-4 mt-5">
+                @csrf
+                <input type="hidden" name="order_code" id="tmOrderCode">
+
+                <div class="p-3 bg-sky-50/80 border border-sky-100 rounded-xl flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-1.5 text-slate-700">
+                        <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                        <span class="font-medium">លេខយោងវិក្កយបត្រ (Bill Ref):</span>
+                    </div>
+                    <span class="font-mono font-bold text-sky-700 bg-white px-2 py-0.5 rounded border border-sky-200" id="tmDisplayCode">...</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ឈ្មោះអតិថិជន *</label>
+                    <input type="text" name="customer_name" required placeholder="ឧ. សុខ ចាន់ថា" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-hidden focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">លេខទូរស័ព្ទ *</label>
+                    <input type="text" name="customer_phone" required placeholder="ឧ. 012 345 678" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-hidden focus:border-sky-500">
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">បរិមាណ (Quantity)</label>
+                        <input type="number" name="quantity" id="tmOrderQty" value="1" min="1" max="99" onchange="updateTmQuantity()" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-hidden focus:border-sky-500">
+                    </div>
+                    <div class="flex-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ទីតាំងទទួលទំនិញ</label>
+                        <input type="text" name="customer_address" placeholder="ខេត្ត/ក្រុង ឬទីតាំងដឹកជញ្ជូន..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-hidden focus:border-sky-500">
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-xs font-semibold text-slate-700 mb-2">វិធីសាស្ត្របង់ប្រាក់ *</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="relative flex items-center justify-center gap-2 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                            <input type="radio" name="payment_method" value="cod" class="peer sr-only" checked onchange="toggleTmKHQR(false)">
+                            <div class="w-4 h-4 rounded-full border border-slate-300 peer-checked:border-[4px] peer-checked:border-sky-500"></div>
+                            <span class="text-xs font-bold text-slate-700">បង់ប្រាក់ពេលទទួល</span>
+                        </label>
+                        <label class="relative flex items-center justify-center gap-2 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                            <input type="radio" name="payment_method" value="khqr" class="peer sr-only" onchange="toggleTmKHQR(true)">
+                            <div class="w-4 h-4 rounded-full border border-slate-300 peer-checked:border-[4px] peer-checked:border-sky-500"></div>
+                            <span class="text-xs font-bold text-slate-700">ABA / KHQR</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="tmKhqrSection" class="hidden space-y-4 p-4 bg-sky-50 rounded-2xl border border-sky-100 text-center">
+                    <p class="text-xs text-sky-800 font-bold">សូមស្កេន QR Code ខាងក្រោម ដើម្បីទូទាត់ប្រាក់៖</p>
+                    <div class="w-44 h-44 bg-white rounded-2xl border border-sky-200 mx-auto flex items-center justify-center shadow-xs overflow-hidden">
+                        <canvas id="tmDynamicKHQR"></canvas>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2">* QR នេះបង្កើតឡើងដោយស្វ័យប្រវត្តិយោងតាមតម្លៃសរុប និងលេខយោង <strong class="text-sky-700" id="tmRefText">#TM</strong></p>
+
+                    <!-- Modern Receipt Upload -->
+                    <div class="space-y-1.5 text-left pt-2 border-t border-sky-200/60">
+                        <label class="block text-xs font-bold text-slate-700 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>រូបភាពបង្កាន់ដៃបង់ប្រាក់ (Receipt Screenshot)</span>
+                            </span>
+                            <span class="text-[10px] text-sky-700 font-semibold bg-white px-2 py-0.5 rounded-full border border-sky-200">ជម្រើសផ្ទៀងផ្ទាត់</span>
+                        </label>
+
+                        <div id="tmReceiptDropzone" onclick="document.getElementById('tmPaymentReceiptInput').click()" class="relative group border-2 border-dashed border-sky-200 hover:border-sky-500 bg-white/80 hover:bg-white rounded-2xl p-3 text-center cursor-pointer transition-all duration-200">
+                            <input type="file" name="payment_receipt" id="tmPaymentReceiptInput" accept="image/*" class="hidden" onchange="handleTmReceiptPreview(this)">
+                            
+                            <!-- Empty State -->
+                            <div id="tmReceiptEmptyState" class="space-y-1.5 py-1">
+                                <div class="w-10 h-10 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center mx-auto shadow-2xs border border-sky-100">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                                </div>
+                                <p class="text-xs font-bold text-slate-700 group-hover:text-sky-700 transition-colors">
+                                    ចុចជ្រើសរើសរូបភាព ឬទម្លាក់រូបភាពនៅទីនេះ
+                                </p>
+                                <p class="text-[10px] text-slate-400">
+                                    JPG, PNG ឬ WEBP (ទំហំអតិបរមា 5MB)
+                                </p>
+                            </div>
+
+                            <!-- Live Preview State -->
+                            <div id="tmReceiptPreviewState" class="hidden flex items-center justify-between gap-3 bg-slate-50 p-2 rounded-xl border border-sky-100 text-left" onclick="event.stopPropagation()">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <img id="tmReceiptPreviewImg" src="" alt="Receipt" class="w-10 h-10 object-cover rounded-lg border border-slate-200 shrink-0">
+                                    <div class="min-w-0">
+                                        <p id="tmReceiptFileName" class="text-xs font-bold text-slate-800 truncate">receipt.png</p>
+                                        <p id="tmReceiptFileSize" class="text-[10px] text-slate-400">120 KB</p>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="removeTmReceiptFile(event)" class="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ចំណាំផ្សេងៗ</label>
+                    <textarea name="notes" rows="2" placeholder="ចំណាំបጨማሪ..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-hidden focus:border-sky-500"></textarea>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeTmOrderModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors cursor-pointer">
+                        បោះបង់
+                    </button>
+                    <button type="submit" class="flex-2 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md">
+                        បញ្ជូនការកម្ម៉ង់ទិញ
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -653,10 +857,98 @@
             openModal('bookModal');
         }
 
-        function viewTool(name, desc) {
-            document.getElementById('toolModalTitle').innerText = name;
-            document.getElementById('toolModalDesc').innerText = desc;
-            openModal('toolModal');
+        // Teaching Material Order Modal Handlers
+        let currentTmItem = null;
+        let currentTmQuantity = 1;
+        let currentTmOrderCode = '';
+        let tmPaymentCheckInterval = null;
+
+        function updateTmQuantity() {
+            const qtyInput = document.getElementById('tmOrderQty');
+            if (qtyInput) {
+                currentTmQuantity = qtyInput.value || 1;
+                const method = document.querySelector('input[name="payment_method"]:checked');
+                if (method && method.value === 'khqr') {
+                    toggleTmKHQR(true);
+                }
+            }
+        }
+
+        function toggleTmKHQR(show) {
+            const section = document.getElementById('tmKhqrSection');
+            if (show) {
+                section.classList.remove('hidden');
+                if (currentTmItem) {
+                    const price = currentTmItem.price ? parseFloat(currentTmItem.price) : 0;
+                    const total = price * currentTmQuantity;
+                    if (total > 0 && typeof window.generateKHQR === 'function') {
+                        window.generateKHQR('tmDynamicKHQR', total, currentTmItem.name, currentTmOrderCode);
+                    }
+                }
+            } else {
+                section.classList.add('hidden');
+            }
+        }
+
+        function openTmOrderModal(item) {
+            currentTmItem = item;
+            currentTmQuantity = 1;
+            currentTmOrderCode = 'TM' + Math.floor(10000 + Math.random() * 90000);
+            const orderCodeInput = document.getElementById('tmOrderCode');
+            if (orderCodeInput) orderCodeInput.value = currentTmOrderCode;
+            const displayCode = document.getElementById('tmDisplayCode');
+            if (displayCode) displayCode.textContent = '#' + currentTmOrderCode;
+            const refText = document.getElementById('tmRefText');
+            if (refText) refText.textContent = '#' + currentTmOrderCode;
+
+            const qtyInput = document.getElementById('tmOrderQty');
+            if (qtyInput) qtyInput.value = 1;
+            document.getElementById('tmOrderTitle').innerText = item.name;
+            const price = item.price ? '$' + parseFloat(item.price).toFixed(2) : 'Free';
+            document.getElementById('tmOrderPriceDisplay').innerText = price;
+            document.getElementById('tmOrderImg').src = item.image || '/images/tool_ruler.svg';
+            document.getElementById('tmOrderForm').action = '/teaching-materials/' + item.id + '/order';
+            document.getElementById('tmOrderModal').classList.remove('hidden');
+        }
+
+        function handleTmReceiptPreview(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('tmReceiptPreviewImg');
+                    if (img) img.src = e.target.result;
+                    const name = document.getElementById('tmReceiptFileName');
+                    if (name) name.textContent = file.name;
+                    const size = document.getElementById('tmReceiptFileSize');
+                    if (size) size.textContent = (file.size / 1024).toFixed(1) + ' KB';
+
+                    document.getElementById('tmReceiptEmptyState')?.classList.add('hidden');
+                    document.getElementById('tmReceiptPreviewState')?.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeTmReceiptFile(e) {
+            if (e) e.stopPropagation();
+            const input = document.getElementById('tmPaymentReceiptInput');
+            if (input) input.value = '';
+            const img = document.getElementById('tmReceiptPreviewImg');
+            if (img) img.src = '';
+            document.getElementById('tmReceiptEmptyState')?.classList.remove('hidden');
+            document.getElementById('tmReceiptPreviewState')?.classList.add('hidden');
+        }
+
+        function closeTmOrderModal() {
+            if (typeof tmPaymentCheckInterval !== 'undefined' && tmPaymentCheckInterval) {
+                clearInterval(tmPaymentCheckInterval);
+                tmPaymentCheckInterval = null;
+            }
+            const modal = document.getElementById('tmOrderModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
         }
 
         function submitHomework(e) {
@@ -716,12 +1008,22 @@
             alert('ស្វែងរក: ' + text);
         }
 
-        // Close dropdowns when clicking outside
+        // Close dropdowns and modals when clicking outside
         window.addEventListener('click', function(e) {
             const userBtn = document.getElementById('userBtn');
             const userDropdown = document.getElementById('userDropdown');
             if (userBtn && userDropdown && !userBtn.contains(e.target) && !userDropdown.contains(e.target)) {
                 userDropdown.classList.add('hidden');
+            }
+            const tmModal = document.getElementById('tmOrderModal');
+            if (e.target === tmModal) {
+                closeTmOrderModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeTmOrderModal();
             }
         });
     </script>

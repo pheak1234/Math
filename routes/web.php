@@ -3,13 +3,24 @@
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TeachingMaterialController;
+use App\Http\Controllers\TelegramWebhookController;
+use App\Models\Article;
+use App\Models\Book;
+use App\Models\ExamAttempt;
+use App\Models\MathExam;
+use App\Models\Order;
+use App\Models\TeachingMaterial;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/auth/{provider}/redirect', [SocialController::class, 'redirect'])->name('social.redirect');
@@ -25,47 +36,49 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('aut
 Route::post('/dashboard/profile', [DashboardController::class, 'updateProfile'])->middleware('auth')->name('dashboard.profile.update');
 
 Route::get('/', function () {
-    $recentArticles = \App\Models\Article::orderByDesc('priority')
+    $recentArticles = Article::orderByDesc('priority')
         ->latest('published_at')
         ->take(4)
         ->get();
-        
-    $recentBooks = \App\Models\Book::orderByDesc('priority')->latest()->take(5)->get();
-    
-    $recentMaterials = \App\Models\TeachingMaterial::latest()->take(5)->get();
-        
+
+    $recentBooks = Book::orderByDesc('priority')->latest()->take(5)->get();
+
+    $recentMaterials = TeachingMaterial::orderByDesc('is_featured')
+        ->latest()
+        ->take(4)
+        ->get();
+
     return view('welcome', compact('recentArticles', 'recentBooks', 'recentMaterials'));
 });
 
 Route::get('/mathematics', function () {
-    $exams = \App\Models\MathExam::with(['questions.options'])
+    $exams = MathExam::with(['questions.options'])
         ->where('is_popular', true)
         ->orderByDesc('priority')
         ->latest()
         ->get();
-        
+
     return view('math-test', compact('exams'));
 });
 
-Route::post('/mathematics/submit', function (Illuminate\Http\Request $request) {
-    if (!Auth::check()) {
+Route::post('/mathematics/submit', function (Request $request) {
+    if (! Auth::check()) {
         return response()->json(['error' => 'Unauthenticated'], 401);
     }
-    
-    $exam = \App\Models\MathExam::findOrFail($request->exam_id);
+
+    $exam = MathExam::findOrFail($request->exam_id);
     $score = $request->score;
-    
-    $attempt = \App\Models\ExamAttempt::create([
+
+    $attempt = ExamAttempt::create([
         'user_id' => Auth::id(),
         'math_exam_id' => $exam->id,
         'score' => $score,
         'status' => 'completed',
         'completed_at' => now(),
     ]);
-    
+
     return response()->json(['success' => true, 'attempt_id' => $attempt->id]);
 })->middleware('auth');
-
 
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
@@ -89,9 +102,6 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/read-book/{book?}', [BookController::class, 'read'])->name('books.read');
 Route::post('/books/{book}/progress', [BookController::class, 'updateProgress'])->middleware('auth')->name('books.progress');
 
-use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
@@ -105,9 +115,6 @@ Route::middleware('guest')->group(function () {
 });
 
 // Telegram Webhook & Setup
-use App\Http\Controllers\TelegramWebhookController;
-use App\Models\Order;
-use Illuminate\Support\Facades\Http;
 
 Route::post('/telegram/webhook', [TelegramWebhookController::class, 'handle'])->name('telegram.webhook');
 
