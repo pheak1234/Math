@@ -168,20 +168,30 @@
                         </div>
                     @endif
 
-                    <!-- Redesigned Quantity Selector & Modern Action Bar -->
+                    <!-- Catchy Modern Action Bar & Button Redesign -->
+                    <style>
+                        @keyframes tmShimmer {
+                            0% { transform: translateX(-150%) skewX(-20deg); }
+                            40%, 100% { transform: translateX(250%) skewX(-20deg); }
+                        }
+                        .animate-tm-shimmer {
+                            animation: tmShimmer 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                        }
+                    </style>
+
                     <div class="mt-8 pt-6 border-t border-slate-100 space-y-4">
                         
-                        <!-- Quantity & Live Subtotal Card -->
-                        <div class="p-3.5 bg-slate-50/90 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-4">
+                        <!-- Quantity Selector & Live Subtotal Bar -->
+                        <div class="p-4 bg-gradient-to-r from-amber-50/60 via-slate-50 to-orange-50/50 rounded-2xl border border-amber-200/60 flex items-center justify-between gap-4 shadow-xs">
                             <div class="flex items-center gap-3">
                                 <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
-                                    <span>ចំនួន (Qty):</span>
+                                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+                                    <span>ចំនួន (Quantity):</span>
                                 </span>
-                                <div class="flex items-center bg-white rounded-xl p-1 border border-slate-200 shadow-2xs">
+                                <div class="flex items-center bg-white rounded-xl p-1 border border-slate-200 shadow-xs">
                                     <button type="button" 
                                             onclick="let q = document.getElementById('detailItemQty'); q.value = Math.max(1, parseInt(q.value||1) - 1); updateDetailLineTotal();" 
-                                            class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-black text-sm transition-colors cursor-pointer active:scale-95">
+                                            class="w-8 h-8 rounded-lg bg-slate-50 hover:bg-amber-500 hover:text-white text-slate-700 flex items-center justify-center font-black text-sm transition-all cursor-pointer active:scale-90">
                                         −
                                     </button>
                                     <input type="number" 
@@ -191,50 +201,85 @@
                                            max="99" 
                                            onchange="updateDetailLineTotal()" 
                                            onkeyup="updateDetailLineTotal()" 
-                                           class="w-12 text-center text-xs font-extrabold font-mono text-slate-900 bg-transparent outline-hidden">
+                                           class="w-12 text-center text-sm font-black font-mono text-slate-900 bg-transparent outline-hidden">
                                     <button type="button" 
                                             onclick="let q = document.getElementById('detailItemQty'); q.value = Math.min(99, parseInt(q.value||1) + 1); updateDetailLineTotal();" 
-                                            class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-black text-sm transition-colors cursor-pointer active:scale-95">
+                                            class="w-8 h-8 rounded-lg bg-slate-50 hover:bg-amber-500 hover:text-white text-slate-700 flex items-center justify-center font-black text-sm transition-all cursor-pointer active:scale-90">
                                         +
                                     </button>
                                 </div>
                             </div>
 
                             <div class="text-right">
-                                <span class="text-[10px] text-slate-400 block font-medium">ទឹកប្រាក់សរុប (Subtotal)</span>
-                                <span id="detailLineTotal" class="text-base sm:text-lg font-black text-amber-600 font-mono">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">ទឹកប្រាក់សរុប (Subtotal)</span>
+                                <span id="detailLineTotal" class="text-lg sm:text-xl font-black text-amber-600 font-mono tracking-tight">
                                     {{ $material->price > 0 ? '$' . number_format($material->price, 2) : 'Free' }}
                                 </span>
                             </div>
                         </div>
 
-                        <!-- Primary & Secondary CTA Buttons -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                            <!-- Buy Now / Checkout Button -->
+                        <!-- 2 Catchy Main Action Buttons (High Contrast & Shimmer) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                            
+                            <!-- 1. Primary CTA: Buy Now (Vibrant Flame Gradient + Live Shimmer) -->
                             <button type="button" 
                                     onclick="let qty = parseInt(document.getElementById('detailItemQty').value) || 1; window.addTMCart({{ json_encode($material) }}, qty, true);" 
-                                    class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:via-orange-600 hover:to-amber-700 text-white font-extrabold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2.5 shadow-xl shadow-orange-500/25 hover:shadow-2xl hover:shadow-orange-500/35 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer group">
-                                <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">⚡</span>
-                                <span>កម្ម៉ង់ទិញឥឡូវនេះ (Buy Now)</span>
+                                    class="relative overflow-hidden w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:via-orange-600 hover:to-rose-600 text-white transition-all duration-300 flex items-center justify-center gap-3 shadow-xl shadow-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/50 hover:-translate-y-1 active:translate-y-0 cursor-pointer group">
+                                
+                                <!-- Shimmer beam -->
+                                <div class="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent pointer-events-none animate-tm-shimmer"></div>
+                                
+                                <span class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-base shadow-inner group-hover:scale-110 transition-transform shrink-0">
+                                    ⚡
+                                </span>
+                                <div class="text-left leading-tight">
+                                    <span class="block text-[10px] uppercase font-extrabold tracking-wider text-amber-100">ទិញភ្លាមៗ • ដឹកជូនរហ័ស</span>
+                                    <span class="block text-sm sm:text-base font-black">កម្ម៉ង់ទិញឥឡូវនេះ (Buy Now)</span>
+                                </div>
                             </button>
 
-                            <!-- Add to Cart Button -->
+                            <!-- 2. Secondary CTA: Add to Cart (Deep Obsidian Luxury Dark + Gold Accent) -->
                             <button type="button" 
                                     onclick="let qty = parseInt(document.getElementById('detailItemQty').value) || 1; window.addTMCart({{ json_encode($material) }}, qty, false);" 
-                                    class="w-full py-4 px-6 rounded-2xl border-2 border-amber-500 bg-amber-50/80 hover:bg-amber-500 text-amber-700 hover:text-white font-extrabold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2.5 shadow-xs hover:shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer group">
-                                <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                </svg>
-                                <span>+ ថែមទៅកន្ត្រក (Add to Cart)</span>
+                                    class="relative w-full py-4 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl hover:shadow-slate-900/30 hover:-translate-y-1 active:translate-y-0 cursor-pointer border border-slate-700/80 hover:border-amber-400/80 group">
+                                
+                                <span class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-base group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all shrink-0">
+                                    🛒
+                                </span>
+                                <div class="text-left leading-tight">
+                                    <span class="block text-[10px] uppercase font-extrabold tracking-wider text-slate-400 group-hover:text-amber-300 transition-colors">ប្រមូលទំនិញរួមគ្នា</span>
+                                    <span class="block text-sm sm:text-base font-black text-white group-hover:text-amber-400 transition-colors">+ ថែមទៅកន្ត្រក (Add to Cart)</span>
+                                </div>
                             </button>
+
+                        </div>
+
+                        <!-- 4 Catchy Trust Pills -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-center">
+                            <div class="py-2 px-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-slate-700">
+                                <span>🚚</span>
+                                <span>ដឹកទូទាំងប្រទេស</span>
+                            </div>
+                            <div class="py-2 px-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-slate-700">
+                                <span>💵</span>
+                                <span>បង់ពេលទទួល (COD)</span>
+                            </div>
+                            <div class="py-2 px-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-slate-700">
+                                <span>🛡️</span>
+                                <span>ធានាគុណភាព ១០០%</span>
+                            </div>
+                            <div class="py-2 px-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-slate-700">
+                                <span>💬</span>
+                                <span>ប្រឹក្សាឥតគិតថ្លៃ</span>
+                            </div>
                         </div>
 
                         <!-- Supplementary Links & PDF Action -->
-                        <div class="flex flex-col sm:flex-row gap-3 pt-1">
+                        <div class="flex flex-col sm:flex-row gap-3 pt-2">
                             <button type="button" onclick="alert('បានទាញយកមគ្គុទ្ទេសក៍ណែនាំបង្រៀនជាទម្រង់ PDF!');" 
-                                    class="flex-1 py-3 px-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-2xs">
-                                <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                <span>ទាញយកមគ្គុទ្ទេសក៍ណែនាំបង្រៀន (PDF Guide)</span>
+                                    class="flex-1 py-3 px-4 rounded-xl border border-rose-200 hover:border-rose-300 bg-rose-50/40 hover:bg-rose-50 text-rose-700 font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-2xs">
+                                <span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-rose-500 text-white">PDF</span>
+                                <span>ទាញយកមគ្គុទ្ទេសក៍ណែនាំបង្រៀន (Download Guide)</span>
                             </button>
                             <a href="{{ route('teaching-materials.index') }}" 
                                class="py-3 px-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shrink-0 shadow-2xs">
@@ -242,6 +287,7 @@
                                 <span>បញ្ជីសម្ភារៈទាំងអស់</span>
                             </a>
                         </div>
+
                     </div>
                 </div>
 
