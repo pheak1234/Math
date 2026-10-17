@@ -908,31 +908,31 @@
             setSlide(prev);
         }
 
-        // Horizontal Book Scroll
+        // Horizontal Book Scroll (advance 1 book per click: 1 new property with 4 previous properties)
         function scrollBooks(direction) {
             const container = document.getElementById('booksContainer');
             if (!container) return;
 
             const card = container.querySelector('.book-slider-card');
-            const gap = 16;
-            const cardWidth = card ? (card.offsetWidth + gap) : 230;
-            // Scroll by 1 full screen (all 5 books on desktop) or min 1-2 cards on mobile
-            const scrollAmount = Math.max(cardWidth, Math.min(container.clientWidth, cardWidth * 5));
+            if (!card) return;
+
+            const gap = parseFloat(getComputedStyle(container).gap) || 16;
+            const cardStep = card.getBoundingClientRect().width + gap;
             const maxScroll = container.scrollWidth - container.clientWidth;
 
             if (maxScroll <= 0) return;
 
             if (direction === 'left') {
-                if (container.scrollLeft <= 15) {
+                if (container.scrollLeft <= 5) {
                     container.scrollTo({ left: maxScroll, behavior: 'smooth' });
                 } else {
-                    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                    container.scrollBy({ left: -cardStep, behavior: 'smooth' });
                 }
             } else {
-                if (container.scrollLeft >= maxScroll - 15) {
+                if (container.scrollLeft >= maxScroll - 5) {
                     container.scrollTo({ left: 0, behavior: 'smooth' });
                 } else {
-                    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                    container.scrollBy({ left: cardStep, behavior: 'smooth' });
                 }
             }
         }
