@@ -177,10 +177,10 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </a>
                     <div class="flex items-center gap-1.5 ml-1">
-                        <button type="button" onclick="scrollBooks('left')" class="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer shadow-2xs" aria-label="Previous Books">
+                        <button type="button" onclick="scrollBooks('left')" class="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-all active:scale-90 flex items-center justify-center cursor-pointer shadow-2xs" aria-label="Previous Books">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                         </button>
-                        <button type="button" onclick="scrollBooks('right')" class="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer shadow-2xs" aria-label="Next Books">
+                        <button type="button" onclick="scrollBooks('right')" class="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-all active:scale-90 flex items-center justify-center cursor-pointer shadow-2xs" aria-label="Next Books">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </button>
                     </div>
@@ -192,6 +192,7 @@
                     flex: 0 0 190px !important;
                     width: 190px !important;
                     max-width: 190px !important;
+                    scroll-snap-align: start;
                 }
                 @media (min-width: 640px) {
                     .book-slider-card {
@@ -910,11 +911,29 @@
         // Horizontal Book Scroll
         function scrollBooks(direction) {
             const container = document.getElementById('booksContainer');
-            const scrollAmount = 300;
+            if (!container) return;
+
+            const card = container.querySelector('.book-slider-card');
+            const gap = 16;
+            const cardWidth = card ? (card.offsetWidth + gap) : 230;
+            // Scroll by 1 full screen (all 5 books on desktop) or min 1-2 cards on mobile
+            const scrollAmount = Math.max(cardWidth, Math.min(container.clientWidth, cardWidth * 5));
+            const maxScroll = container.scrollWidth - container.clientWidth;
+
+            if (maxScroll <= 0) return;
+
             if (direction === 'left') {
-                container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                if (container.scrollLeft <= 15) {
+                    container.scrollTo({ left: maxScroll, behavior: 'smooth' });
+                } else {
+                    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                }
             } else {
-                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                if (container.scrollLeft >= maxScroll - 15) {
+                    container.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
             }
         }
 
