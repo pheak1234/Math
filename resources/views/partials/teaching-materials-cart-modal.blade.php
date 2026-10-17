@@ -248,6 +248,7 @@
 <script>
 (function() {
     const CART_STORAGE_KEY = 'anontak_tm_cart';
+    const CART_CSRF_TOKEN = '{{ csrf_token() }}';
     let currentCartCode = '';
 
     window.getTMCart = function() {
@@ -542,7 +543,8 @@
             }
 
             try {
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                const csrfToken = CART_CSRF_TOKEN ||
+                                  document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
                                   document.querySelector('#tmGroupOrderForm input[name="_token"]')?.value;
                 const nameVal = document.querySelector('#tmGroupOrderForm input[name="customer_name"]')?.value || '';
                 const phoneVal = document.querySelector('#tmGroupOrderForm input[name="customer_phone"]')?.value || '';
