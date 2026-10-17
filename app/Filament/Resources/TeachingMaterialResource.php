@@ -92,16 +92,41 @@ class TeachingMaterialResource extends Resource
                         Forms\Components\FileUpload::make('image')
                             ->label('រូបភាពតំណាង / Thumbnail (Main Image)')
                             ->image()
+                            ->imageEditor()
+                            ->imageEditorAspectRatios([
+                                null,
+                                '1:1',
+                                '4:3',
+                                '16:9',
+                            ])
+                            ->imageCropAspectRatio('1:1')
+                            ->imageResizeMode('cover')
+                            ->imageResizeTargetWidth('1200')
+                            ->imageResizeTargetHeight('1200')
+                            ->imageResizeUpscale(false)
                             ->directory('teaching-materials')
-                            ->helperText('រូបភាពមេសម្រាប់បង្ហាញលើ Card បញ្ជីទំនិញ និងទំព័រដើម (PNG, JPG, WEBP ឬ SVG)'),
+                            ->maxSize(10240)
+                            ->helperText('ជ្រើសរើសរូបភាព រួចចុចលើប៊ូតុងកែសម្រួល (Pencil) ដើម្បី Crop (កាត់ត) បង្វិល (Rotate) និង Resize (កំណត់ទំហំ)'),
 
                         Forms\Components\FileUpload::make('gallery')
                             ->label('កម្រងរូបភាពបន្ថែម / Gallery (Multiple Images)')
                             ->image()
                             ->multiple()
                             ->reorderable()
+                            ->imageEditor()
+                            ->imageEditorAspectRatios([
+                                null,
+                                '1:1',
+                                '4:3',
+                                '16:9',
+                            ])
+                            ->imageResizeMode('cover')
+                            ->imageResizeTargetWidth('1600')
+                            ->imageResizeTargetHeight('1600')
+                            ->imageResizeUpscale(false)
                             ->directory('teaching-materials/gallery')
-                            ->helperText('អាចជ្រើសរើសរូបភាពច្រើនសន្លឹកដើម្បីបង្ហាញជា Gallery Slide និង Thumbnails ក្នុងទំព័រលម្អិត')
+                            ->maxSize(10240)
+                            ->helperText('អ្នកអាចផ្ទុករូបភាពច្រើនសន្លឹក ហើយអាចចុចកែសម្រួល (Crop, Rotate, Resize) លើរូបនីមួយៗបាន')
                             ->columnSpanFull(),
 
                         Forms\Components\Textarea::make('specifications')

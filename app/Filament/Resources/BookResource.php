@@ -25,7 +25,23 @@ class BookResource extends Resource
                 Forms\Components\TextInput::make('author')
                     ->required(),
                 Forms\Components\FileUpload::make('cover_image')
-                    ->image(),
+                    ->label('រូបភាពក្របសៀវភៅ (Cover Image)')
+                    ->image()
+                    ->imageEditor()
+                    ->imageEditorAspectRatios([
+                        null,
+                        '3:4',
+                        '1:1',
+                        '16:9',
+                    ])
+                    ->imageCropAspectRatio('3:4')
+                    ->imageResizeMode('cover')
+                    ->imageResizeTargetWidth('1200')
+                    ->imageResizeTargetHeight('1600')
+                    ->imageResizeUpscale(false)
+                    ->directory('books')
+                    ->maxSize(10240)
+                    ->helperText('ចុចលើប៊ូតុងកែសម្រួល (Pencil) ដើម្បី Crop & Resize រូបភាពក្របសៀវភៅ'),
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->numeric()
