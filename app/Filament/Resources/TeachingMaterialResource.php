@@ -87,7 +87,9 @@ class TeachingMaterialResource extends Resource
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('រូបភាព និងការពិពណ៌នា (Media & Description)')
+                Forms\Components\Section::make('កម្រងរូបភាព (Media & Gallery Showcase)')
+                    ->description('ផ្ទុករូបភាពតំណាង និងរូបភាពបន្ថែម។ រៀបចំជាក្រឡាចត្រង្គតូចៗ (Compact Grid) មិនធ្វើឱ្យទំព័រវែងឡើយ')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\FileUpload::make('image')
                             ->label('រូបភាពតំណាង / Thumbnail (Main Image)')
@@ -106,13 +108,15 @@ class TeachingMaterialResource extends Resource
                             ->imageResizeUpscale(false)
                             ->directory('teaching-materials')
                             ->maxSize(10240)
-                            ->helperText('ជ្រើសរើសរូបភាព រួចចុចលើប៊ូតុងកែសម្រួល (Pencil) ដើម្បី Crop (កាត់ត) បង្វិល (Rotate) និង Resize (កំណត់ទំហំ)'),
+                            ->helperText('រូបភាពមេសម្រាប់បង្ហាញលើ Card និងទំព័រដើម'),
 
                         Forms\Components\FileUpload::make('gallery')
                             ->label('កម្រងរូបភាពបន្ថែម / Gallery (Multiple Images)')
                             ->image()
                             ->multiple()
                             ->reorderable()
+                            ->panelLayout('grid')
+                            ->imagePreviewHeight('90')
                             ->imageEditor()
                             ->imageEditorAspectRatios([
                                 null,
@@ -126,9 +130,13 @@ class TeachingMaterialResource extends Resource
                             ->imageResizeUpscale(false)
                             ->directory('teaching-materials/gallery')
                             ->maxSize(10240)
-                            ->helperText('អ្នកអាចផ្ទុករូបភាពច្រើនសន្លឹក ហើយអាចចុចកែសម្រួល (Crop, Rotate, Resize) លើរូបនីមួយៗបាន')
+                            ->helperText('រៀបចំជារូបតូចៗ (Grid Layout) មិនធ្វើឱ្យទំព័រវែងឡើយ។ ចុចកែសម្រួល (Pencil) លើរូបនីមួយៗបាន')
                             ->columnSpanFull(),
+                    ]),
 
+                Forms\Components\Section::make('ការពិពណ៌នា និងលក្ខណៈបច្ចេកទេស (Description & Specs)')
+                    ->collapsible()
+                    ->schema([
                         Forms\Components\Textarea::make('specifications')
                             ->label('លក្ខណៈបច្ចេកទេស (Specifications)')
                             ->placeholder('ឧ. ខ្នាត៖ ៣០ ស.ម | សម្ភារៈ៖ ដែកអ៊ីណុកមិនច្រេះ | គំនូសខ្នាតស្តង់ដារ')

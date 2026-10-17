@@ -118,25 +118,34 @@
                     </div>
 
                     @if($hasMultipleImages)
-                        <!-- Thumbnail Gallery Strip -->
-                        <div class="mt-3.5">
+                        <!-- Compact Thumbnail Gallery Strip (Fixed height, horizontal scroll) -->
+                        <div class="mt-3.5 pt-3 border-t border-slate-100">
                             <div class="flex items-center justify-between text-xs font-semibold text-slate-600 mb-2 px-1">
-                                <span class="flex items-center gap-1.5">
+                                <span class="flex items-center gap-1.5 text-slate-700">
                                     <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                                    <span>កម្រងរូបភាព (Gallery)</span>
+                                    <span>កម្រងរូបភាព ({{ count($allImages) }} សន្លឹក)</span>
                                 </span>
-                                <span class="text-[11px] text-slate-400 font-normal">ចុចលើរូបដើម្បីពង្រីកមើល</span>
+                                @if(count($allImages) > 4)
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" onclick="tmScrollThumbs(-120)" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer" title="មុន">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                                        </button>
+                                        <button type="button" onclick="tmScrollThumbs(120)" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer" title="បន្ទាប់">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
 
-                            <div class="flex items-center gap-2.5 overflow-x-auto p-1 scrollbar-thin">
+                            <div id="tmThumbsContainer" class="flex items-center gap-2 overflow-x-auto p-1 scrollbar-thin scroll-smooth max-w-full">
                                 @foreach($allImages as $index => $img)
                                     <button type="button" 
                                             onclick="tmSelectImage({{ $index }})" 
                                             id="tmThumb-{{ $index }}"
-                                            class="tm-gallery-thumb relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white p-2 border-2 transition-all cursor-pointer shrink-0 flex items-center justify-center shadow-2xs hover:shadow-sm {{ $index === 0 ? 'border-sky-500 ring-2 ring-sky-400/30 scale-105' : 'border-slate-200 hover:border-sky-300 opacity-70 hover:opacity-100' }}">
+                                            class="tm-gallery-thumb relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-slate-50 p-1.5 border-2 transition-all cursor-pointer shrink-0 flex items-center justify-center shadow-2xs hover:shadow-sm {{ $index === 0 ? 'border-sky-500 ring-2 ring-sky-400/30 scale-105 bg-white' : 'border-slate-200 hover:border-sky-300 opacity-60 hover:opacity-100' }}">
                                         <img src="{{ $img }}" alt="{{ $material->name }} - {{ $index + 1 }}" class="max-h-full max-w-full object-contain">
                                         @if($index === 0)
-                                            <span class="absolute -top-1.5 -right-1.5 bg-sky-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full shadow-xs">មេ</span>
+                                            <span class="absolute -top-1 -right-1 bg-sky-600 text-white text-[8px] font-black px-1 rounded-full shadow-xs">មេ</span>
                                         @endif
                                     </button>
                                 @endforeach
@@ -720,13 +729,26 @@
 
             document.querySelectorAll('.tm-gallery-thumb').forEach((thumb, i) => {
                 if (i === tmCurrentIdx) {
-                    thumb.classList.add('border-sky-500', 'ring-2', 'ring-sky-400/30', 'scale-105', 'opacity-100');
-                    thumb.classList.remove('border-slate-200', 'opacity-70');
+                    thumb.classList.add('border-sky-500', 'ring-2', 'ring-sky-400/30', 'scale-105', 'opacity-100', 'bg-white');
+                    thumb.classList.remove('border-slate-200', 'opacity-60');
                 } else {
-                    thumb.classList.remove('border-sky-500', 'ring-2', 'ring-sky-400/30', 'scale-105', 'opacity-100');
-                    thumb.classList.add('border-slate-200', 'opacity-70');
+                    thumb.classList.remove('border-sky-500', 'ring-2', 'ring-sky-400/30', 'scale-105', 'opacity-100', 'bg-white');
+                    thumb.classList.add('border-slate-200', 'opacity-60');
                 }
             });
+
+            // Smoothly auto-scroll thumbnail into visible area
+            const activeThumb = document.getElementById('tmThumb-' + idx);
+            if (activeThumb) {
+                activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }
+
+        function tmScrollThumbs(delta) {
+            const container = document.getElementById('tmThumbsContainer');
+            if (container) {
+                container.scrollBy({ left: delta, behavior: 'smooth' });
+            }
         }
 
         function tmPrevImage() {
