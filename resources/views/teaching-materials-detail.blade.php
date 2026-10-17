@@ -61,25 +61,24 @@
         <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm relative overflow-hidden">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
                 
-                <!-- Left: Product Image -->
+                <!-- Left: Product Image & Gallery Showcase -->
                 <div class="lg:col-span-5">
                     @php
-                        if ($material->image) {
-                            $matImg = str_starts_with($material->image, '/') || str_starts_with($material->image, 'http') 
-                                ? $material->image 
-                                : Storage::url($material->image);
-                        } else {
-                            $matImg = '/images/tool_ruler.svg';
-                        }
+                        $allImages = $material->all_images;
+                        $mainImg = $allImages[0] ?? '/images/tool_ruler.svg';
+                        $hasMultipleImages = count($allImages) > 1;
                     @endphp
-                    <div class="aspect-square bg-slate-50/80 rounded-2xl p-8 flex items-center justify-center border border-slate-200/80 relative overflow-hidden shadow-inner group">
-                        <img src="{{ $matImg }}" 
+                    
+                    <!-- Main Showcase Display -->
+                    <div class="aspect-square bg-slate-50/80 rounded-2xl p-6 sm:p-8 flex items-center justify-center border border-slate-200/80 relative overflow-hidden shadow-inner group">
+                        <img id="tmMainImage" 
+                             src="{{ $mainImg }}" 
                              alt="{{ $material->name }}" 
-                             class="max-h-full max-w-full object-contain filter drop-shadow-md group-hover:scale-105 transition-transform duration-500">
+                             class="max-h-full max-w-full object-contain filter drop-shadow-md group-hover:scale-105 transition-all duration-300">
                         
                         <!-- Badges -->
-                        <div class="absolute top-4 left-4 flex flex-col gap-1.5 items-start">
-                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-white text-slate-700 shadow-xs border border-slate-200">
+                        <div class="absolute top-4 left-4 flex flex-col gap-1.5 items-start pointer-events-none z-10">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/95 text-slate-700 shadow-xs border border-slate-200 backdrop-blur-xs">
                                 {{ $material->category }}
                             </span>
                             @if($material->price > 0)
@@ -90,11 +89,60 @@
                         </div>
 
                         @if($material->is_featured)
-                            <span class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-xs">
+                            <span class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-xs z-10">
                                 ពេញនិយម
                             </span>
                         @endif
+
+                        @if($hasMultipleImages)
+                            <!-- Left / Right Navigation Overlays -->
+                            <button type="button" 
+                                    onclick="tmPrevImage()" 
+                                    aria-label="Previous image"
+                                    class="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 cursor-pointer hover:scale-110 active:scale-95 z-20">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <button type="button" 
+                                    onclick="tmNextImage()" 
+                                    aria-label="Next image"
+                                    class="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 cursor-pointer hover:scale-110 active:scale-95 z-20">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+
+                            <!-- Counter Badge -->
+                            <div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-900/70 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-xs z-10 font-mono">
+                                <svg class="w-3.5 h-3.5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span id="tmImageCounterText">1 / {{ count($allImages) }}</span>
+                            </div>
+                        @endif
                     </div>
+
+                    @if($hasMultipleImages)
+                        <!-- Thumbnail Gallery Strip -->
+                        <div class="mt-3.5">
+                            <div class="flex items-center justify-between text-xs font-semibold text-slate-600 mb-2 px-1">
+                                <span class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                                    <span>កម្រងរូបភាព (Gallery)</span>
+                                </span>
+                                <span class="text-[11px] text-slate-400 font-normal">ចុចលើរូបដើម្បីពង្រីកមើល</span>
+                            </div>
+
+                            <div class="flex items-center gap-2.5 overflow-x-auto p-1 scrollbar-thin">
+                                @foreach($allImages as $index => $img)
+                                    <button type="button" 
+                                            onclick="tmSelectImage({{ $index }})" 
+                                            id="tmThumb-{{ $index }}"
+                                            class="tm-gallery-thumb relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white p-2 border-2 transition-all cursor-pointer shrink-0 flex items-center justify-center shadow-2xs hover:shadow-sm {{ $index === 0 ? 'border-sky-500 ring-2 ring-sky-400/30 scale-105' : 'border-slate-200 hover:border-sky-300 opacity-70 hover:opacity-100' }}">
+                                        <img src="{{ $img }}" alt="{{ $material->name }} - {{ $index + 1 }}" class="max-h-full max-w-full object-contain">
+                                        @if($index === 0)
+                                            <span class="absolute -top-1.5 -right-1.5 bg-sky-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full shadow-xs">មេ</span>
+                                        @endif
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- Mini Guarantees -->
                     <div class="grid grid-cols-3 gap-2 mt-4 text-center">
@@ -646,6 +694,51 @@
             const unitPrice = {{ (float) ($material->price ?? 0) }};
             const total = qty * unitPrice;
             totalEl.textContent = unitPrice > 0 ? '$' + total.toFixed(2) : 'Free';
+        }
+
+        // Teaching Material Gallery Controller
+        const tmImages = @json($allImages);
+        let tmCurrentIdx = 0;
+
+        function tmSelectImage(idx) {
+            if (idx < 0 || idx >= tmImages.length) return;
+            tmCurrentIdx = idx;
+            
+            const mainImg = document.getElementById('tmMainImage');
+            if (mainImg) {
+                mainImg.classList.add('opacity-40', 'scale-95');
+                setTimeout(() => {
+                    mainImg.src = tmImages[tmCurrentIdx];
+                    mainImg.classList.remove('opacity-40', 'scale-95');
+                }, 100);
+            }
+
+            const counter = document.getElementById('tmImageCounterText');
+            if (counter) {
+                counter.textContent = (tmCurrentIdx + 1) + ' / ' + tmImages.length;
+            }
+
+            document.querySelectorAll('.tm-gallery-thumb').forEach((thumb, i) => {
+                if (i === tmCurrentIdx) {
+                    thumb.classList.add('border-sky-500', 'ring-2', 'ring-sky-400/30', 'scale-105', 'opacity-100');
+                    thumb.classList.remove('border-slate-200', 'opacity-70');
+                } else {
+                    thumb.classList.remove('border-sky-500', 'ring-2', 'ring-sky-400/30', 'scale-105', 'opacity-100');
+                    thumb.classList.add('border-slate-200', 'opacity-70');
+                }
+            });
+        }
+
+        function tmPrevImage() {
+            if (tmImages.length <= 1) return;
+            const prevIdx = (tmCurrentIdx - 1 + tmImages.length) % tmImages.length;
+            tmSelectImage(prevIdx);
+        }
+
+        function tmNextImage() {
+            if (tmImages.length <= 1) return;
+            const nextIdx = (tmCurrentIdx + 1) % tmImages.length;
+            tmSelectImage(nextIdx);
         }
     </script>
 </body>

@@ -90,10 +90,19 @@ class TeachingMaterialResource extends Resource
                 Forms\Components\Section::make('រូបភាព និងការពិពណ៌នា (Media & Description)')
                     ->schema([
                         Forms\Components\FileUpload::make('image')
-                            ->label('រូបភាពសម្ភារៈ (Image)')
+                            ->label('រូបភាពតំណាង / Thumbnail (Main Image)')
                             ->image()
                             ->directory('teaching-materials')
-                            ->helperText('អាចផ្ទុករូបភាព PNG, JPG ឬ SVG។ ប្រសិនបើមិនផ្ទុកទេ នឹងប្រើរូបភាពលំនាំដើម។'),
+                            ->helperText('រូបភាពមេសម្រាប់បង្ហាញលើ Card បញ្ជីទំនិញ និងទំព័រដើម (PNG, JPG, WEBP ឬ SVG)'),
+
+                        Forms\Components\FileUpload::make('gallery')
+                            ->label('កម្រងរូបភាពបន្ថែម / Gallery (Multiple Images)')
+                            ->image()
+                            ->multiple()
+                            ->reorderable()
+                            ->directory('teaching-materials/gallery')
+                            ->helperText('អាចជ្រើសរើសរូបភាពច្រើនសន្លឹកដើម្បីបង្ហាញជា Gallery Slide និង Thumbnails ក្នុងទំព័រលម្អិត')
+                            ->columnSpanFull(),
 
                         Forms\Components\Textarea::make('specifications')
                             ->label('លក្ខណៈបច្ចេកទេស (Specifications)')
@@ -172,6 +181,13 @@ class TeachingMaterialResource extends Resource
                     ->label('ពេញនិយម')
                     ->boolean()
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('gallery')
+                    ->label('Gallery')
+                    ->state(fn (TeachingMaterial $record): string => ! empty($record->gallery) && is_array($record->gallery) ? count($record->gallery).' រូប' : '-')
+                    ->badge()
+                    ->color(fn (string $state): string => $state !== '-' ? 'info' : 'gray')
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('កាលបរិច្ឆេទ')
