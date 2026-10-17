@@ -250,6 +250,7 @@
     const CART_STORAGE_KEY = 'anontak_tm_cart';
     const CART_CSRF_TOKEN = '{{ csrf_token() }}';
     let currentCartCode = '';
+    let cartPaymentPollingInterval = null;
 
     window.getTMCart = function() {
         try {
