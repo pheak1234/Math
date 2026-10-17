@@ -187,12 +187,35 @@
                 </div>
             </div>
 
+            <style>
+                .book-slider-card {
+                    flex: 0 0 190px !important;
+                    width: 190px !important;
+                    max-width: 190px !important;
+                }
+                @media (min-width: 640px) {
+                    .book-slider-card {
+                        flex: 0 0 210px !important;
+                        width: 210px !important;
+                        max-width: 210px !important;
+                    }
+                }
+                @media (min-width: 1024px) {
+                    .book-slider-card {
+                        flex: 0 0 calc((100% - 64px) / 5) !important;
+                        width: calc((100% - 64px) / 5) !important;
+                        max-width: calc((100% - 64px) / 5) !important;
+                        min-width: 190px !important;
+                    }
+                }
+            </style>
+
             <!-- Books Slider (5 items displayed, smooth slide) -->
-            <div id="booksContainer" class="flex gap-4 sm:gap-5 lg:gap-4 overflow-x-auto pb-4 pt-1 snap-x scroll-smooth no-scrollbar">
+            <div id="booksContainer" class="flex gap-4 overflow-x-auto pb-4 pt-1 snap-x scroll-smooth no-scrollbar" style="scrollbar-width: none; -ms-overflow-style: none;">
                 @forelse($recentBooks as $book)
-                    <div class="flex-none w-[170px] sm:w-[200px] md:w-[220px] lg:w-[calc((100%-64px)/5)] snap-start bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-200 flex flex-col relative">
+                    <div class="book-slider-card flex-none snap-start bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-200 flex flex-col relative" style="flex: 0 0 auto;">
                         <!-- Image Container -->
-                        <a href="{{ route('books.show', $book->id) }}" class="block relative aspect-[3/4] overflow-hidden border-b border-slate-100">
+                        <a href="{{ route('books.show', $book->id) }}" class="block relative aspect-[3/4] overflow-hidden border-b border-slate-100 bg-slate-50" style="aspect-ratio: 3/4;">
                             @php
                                 if ($book->cover_image) {
                                     $bookImg = str_starts_with($book->cover_image, '/') || str_starts_with($book->cover_image, 'http') 
@@ -219,12 +242,12 @@
                         <!-- Details -->
                         <div class="p-3 flex flex-col flex-1">
                             <!-- Title -->
-                            <a href="{{ route('books.show', $book->id) }}" class="text-sm font-medium text-sky-700 hover:text-orange-600 hover:underline line-clamp-2 leading-tight mb-1">
+                            <a href="{{ route('books.show', $book->id) }}" class="text-sm font-medium text-sky-700 hover:text-orange-600 hover:underline line-clamp-2 leading-tight mb-1" style="min-height: 2.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                 {{ $book->title }}
                             </a>
                             
                             <!-- Author -->
-                            <div class="text-[11px] text-slate-500 mb-1.5 truncate">
+                            <div class="text-[11px] text-slate-500 mb-1.5 truncate" style="height: 1rem; line-height: 1rem;">
                                 ដោយ <span class="text-slate-700">{{ $book->author ?? 'ANONTAK' }}</span>
                             </div>
                             
