@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Order;
 use App\Models\TeachingMaterial;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -131,6 +132,82 @@ class TeachingMaterialTest extends TestCase
             'total_price' => 20.00,
             'payment_method' => 'cod',
             'status' => 'pending',
+        ]);
+    }
+
+    public function test_init_group_order_creates_pending_order_for_khqr(): void
+    {
+        $mat = TeachingMaterial::create([
+            'name' => 'Math Ruler',
+            'price' => 4.50,
+            'category' => 'ឧបករណ៍វាស់ស្ទង់',
+            'description' => 'Precision ruler',
+        ]);
+
+        $cartItems = [
+            ['id' => $mat->id, 'name' => $mat->name, 'price' => 4.50, 'quantity' => 2],
+        ];
+
+        $response = $this->postJson(route('teaching-materials.init-group-order'), [
+            'order_code' => 'TM12345',
+            'cart_items' => $cartItems,
+            'customer_name' => 'Borey',
+            'customer_phone' => '098765432',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'order_code' => 'TM12345',
+            'total_price' => 9.00,
+        ]);
+
+        $this->assertDatabaseHas('orders', [
+            'order_code' => 'TM12345',
+            'total_price' => 9.00,
+            'payment_method' => 'khqr',
+            'status' => 'pending',
+        ]);
+    }
+
+    public function test_group_order_updates_preinitialized_khqr_order(): void
+    {
+        $mat = TeachingMaterial::create([
+            'name' => 'Compass',
+            'price' => 6.00,
+            'category' => 'ធរណីមាត្រ',
+            'description' => 'Compass set',
+        ]);
+
+        // Pre-initialize order
+        $this->postJson(route('teaching-materials.init-group-order'), [
+            'order_code' => 'TM55555',
+            'cart_items' => [
+                ['id' => $mat->id, 'name' => $mat->name, 'price' => 6.00, 'quantity' => 2],
+            ],
+        ]);
+
+        // Finalize order with full details
+        $response = $this->post(route('teaching-materials.group-order'), [
+            'order_code' => 'TM55555',
+            'customer_name' => 'Chenda',
+            'customer_phone' => '011223344',
+            'customer_address' => 'Tuol Kork, Phnom Penh',
+            'payment_method' => 'khqr',
+            'cart_items' => json_encode([
+                ['id' => $mat->id, 'name' => $mat->name, 'price' => 6.00, 'quantity' => 2],
+            ]),
+        ]);
+
+        $response->assertSessionHas('order_success');
+        $this->assertEquals(1, Order::where('order_code', 'TM55555')->count());
+        $this->assertDatabaseHas('orders', [
+            'order_code' => 'TM55555',
+            'customer_name' => 'Chenda',
+            'customer_phone' => '011223344',
+            'customer_address' => 'Tuol Kork, Phnom Penh',
+            'payment_method' => 'khqr',
+            'total_price' => 12.00,
         ]);
     }
 }

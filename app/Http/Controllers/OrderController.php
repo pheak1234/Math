@@ -61,6 +61,69 @@ class OrderController extends Controller
         return redirect()->back()->with('order_success', 'ការបញ្ជាទិញរបស់អ្នកត្រូវបានទទួលជោគជ័យ! យើងនឹងទាក់ទងទៅអ្នកក្នុងពេលឆាប់ៗនេះ។');
     }
 
+    public function initGroupOrder(Request $request)
+    {
+        $cartItems = $request->input('cart_items', '[]');
+        $items = is_string($cartItems) ? json_decode($cartItems, true) : $cartItems;
+
+        if (! is_array($items) || empty($items)) {
+            return response()->json(['success' => false, 'message' => 'Cart is empty'], 422);
+        }
+
+        $totalQuantity = 0;
+        $calculatedTotal = 0;
+        $summaryLines = [];
+        $firstMaterialId = null;
+
+        foreach ($items as $item) {
+            $tmId = $item['id'] ?? null;
+            $tm = $tmId ? TeachingMaterial::find($tmId) : null;
+            $qty = max(1, (int) ($item['quantity'] ?? 1));
+            $price = $tm && $tm->price > 0 ? (float) $tm->price : (float) ($item['price'] ?? 0);
+            $name = $tm ? $tm->name : ($item['name'] ?? 'សម្ភារៈ');
+
+            if (! $firstMaterialId && $tm) {
+                $firstMaterialId = $tm->id;
+            }
+
+            $lineTotal = $price * $qty;
+            $totalQuantity += $qty;
+            $calculatedTotal += $lineTotal;
+
+            $summaryLines[] = "• {$name} x {$qty} ($".number_format($lineTotal, 2).')';
+        }
+
+        $user = Auth::user();
+        $orderCode = $request->input('order_code');
+        $order = null;
+
+        if (! empty($orderCode)) {
+            $order = Order::where('order_code', $orderCode)->first();
+        }
+
+        if (! $order) {
+            $order = new Order;
+            $order->order_code = $orderCode ?: ('TM'.rand(10000, 99999));
+        }
+
+        $order->teaching_material_id = $firstMaterialId;
+        $order->user_id = $user ? $user->id : null;
+        $order->customer_name = $user ? $user->name : ($request->input('customer_name') ?: 'ភ្ញៀវ');
+        $order->customer_phone = $user ? ($user->phone ?? '012345678') : ($request->input('customer_phone') ?: '012345678');
+        $order->quantity = $totalQuantity;
+        $order->total_price = max(0.01, $calculatedTotal);
+        $order->payment_method = 'khqr';
+        $order->notes = '📦 សម្ភារៈបង្រៀន (Group Order '.count($items)." មុខ):\n".implode("\n", $summaryLines);
+        $order->status = 'pending';
+        $order->save();
+
+        return response()->json([
+            'success' => true,
+            'order_code' => $order->order_code,
+            'total_price' => (float) $order->total_price,
+        ]);
+    }
+
     public function storeGroupOrder(Request $request)
     {
         $validated = $request->validate([
@@ -93,7 +156,7 @@ class OrderController extends Controller
             $tmId = $item['id'] ?? null;
             $tm = $tmId ? TeachingMaterial::find($tmId) : null;
             $qty = max(1, (int) ($item['quantity'] ?? 1));
-            $price = $tm ? (float) $tm->price : (float) ($item['price'] ?? 0);
+            $price = $tm && $tm->price > 0 ? (float) $tm->price : (float) ($item['price'] ?? 0);
             $name = $tm ? $tm->name : ($item['name'] ?? 'សម្ភារៈ');
 
             if (! $firstMaterialId && $tm) {
@@ -112,8 +175,17 @@ class OrderController extends Controller
             $fullNotes .= "\n\n📝 ចំណាំ: ".$validated['notes'];
         }
 
-        $order = new Order;
-        $order->order_code = $validated['order_code'] ?? ('TM'.rand(10000, 99999));
+        $order = null;
+        if (! empty($validated['order_code'])) {
+            $order = Order::where('order_code', $validated['order_code'])->first();
+        }
+
+        if (! $order) {
+            $order = new Order;
+            $order->order_code = $validated['order_code'] ?? ('TM'.rand(10000, 99999));
+            $order->status = 'pending';
+        }
+
         $order->teaching_material_id = $firstMaterialId;
         $order->user_id = Auth::id();
         $order->customer_name = $validated['customer_name'];
@@ -122,9 +194,10 @@ class OrderController extends Controller
         $order->quantity = $totalQuantity;
         $order->total_price = $calculatedTotal;
         $order->payment_method = $validated['payment_method'];
-        $order->payment_receipt = $receiptPath;
+        if ($receiptPath) {
+            $order->payment_receipt = $receiptPath;
+        }
         $order->notes = $fullNotes;
-        $order->status = 'pending';
         $order->save();
 
         // 1. Send Filament Database Notification to all admins
@@ -137,6 +210,14 @@ class OrderController extends Controller
 
         // 2. Send Telegram Notification
         app(TelegramPaymentService::class)->sendAdminOrderNotification($order);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'order_code' => $order->order_code,
+                'message' => 'ការបញ្ជាទិញជាកញ្ចប់របស់អ្នកត្រូវបានទទួលជោគជ័យ!',
+            ]);
+        }
 
         return redirect()->back()->with('order_success', 'ការបញ្ជាទិញជាកញ្ចប់របស់អ្នកត្រូវបានទទួលជោគជ័យ! យើងនឹងរៀបចំដឹកជញ្ជូនជូនអ្នកក្នុងពេលឆាប់ៗនេះ។');
     }

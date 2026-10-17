@@ -150,12 +150,12 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-2">វិធីសាស្ត្របង់ប្រាក់ *</label>
                         <div class="grid grid-cols-2 gap-3">
                             <label class="relative flex items-center justify-center gap-2 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
-                                <input type="radio" name="payment_method" value="cod" class="peer sr-only" checked onchange="window.toggleCartKHQR(false)">
+                                <input type="radio" id="tmCartMethodCod" name="payment_method" value="cod" class="peer sr-only" checked onchange="window.toggleCartKHQR(false)">
                                 <div class="w-4 h-4 rounded-full border border-slate-300 peer-checked:border-[4px] peer-checked:border-sky-500"></div>
                                 <span class="text-xs font-bold text-slate-700">បង់ប្រាក់ពេលទទួល (COD)</span>
                             </label>
                             <label class="relative flex items-center justify-center gap-2 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
-                                <input type="radio" name="payment_method" value="khqr" class="peer sr-only" onchange="window.toggleCartKHQR(true)">
+                                <input type="radio" id="tmCartMethodKhqr" name="payment_method" value="khqr" class="peer sr-only" onchange="window.toggleCartKHQR(true)">
                                 <div class="w-4 h-4 rounded-full border border-slate-300 peer-checked:border-[4px] peer-checked:border-sky-500"></div>
                                 <span class="text-xs font-bold text-slate-700">ABA / KHQR (ស្កេនទូទាត់)</span>
                             </label>
@@ -165,10 +165,16 @@
                     <!-- Dynamic KHQR Section -->
                     <div id="tmCartKhqrSection" class="hidden space-y-4 p-4 bg-sky-50 rounded-2xl border border-sky-100 text-center">
                         <p class="text-xs text-sky-800 font-bold">សូមស្កេន QR Code ខាងក្រោម ដើម្បីទូទាត់ទឹកប្រាក់សរុប៖</p>
-                        <div class="w-44 h-44 bg-white rounded-2xl border border-sky-200 mx-auto flex items-center justify-center shadow-xs overflow-hidden">
-                            <canvas id="tmCartKHQRCanvas"></canvas>
+                        <div class="w-56 h-56 bg-white rounded-2xl border border-sky-200 mx-auto flex items-center justify-center shadow-xs p-2">
+                            <canvas id="tmCartKHQRCanvas" class="max-w-full max-h-full"></canvas>
                         </div>
                         <p class="text-[10px] text-slate-500 mt-1">* QR នេះបង្កើតឡើងដោយស្វ័យប្រវត្តិតាមតម្លៃសរុបនៃកញ្ចប់សម្ភារៈ <strong class="text-sky-700" id="tmCartRefText">#TM</strong></p>
+
+                        <!-- Live Payment Status Polling Indicator -->
+                        <div id="tmCartKhqrWaitingStatus" class="flex items-center justify-center gap-2 text-xs text-amber-600 font-semibold py-1">
+                            <svg class="w-4 h-4 animate-spin text-amber-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                            <span>ប្រព័ន្ធកំពុងរង់ចាំការទូទាត់ស្វ័យប្រវត្តិ...</span>
+                        </div>
 
                         <!-- Modern Receipt Upload -->
                         <div class="space-y-1.5 text-left pt-2 border-t border-sky-200/60">
@@ -438,14 +444,68 @@
         if (cartInput) cartInput.value = JSON.stringify(cart);
 
         // Regenerate KHQR if KHQR is active
-        const khqrRadio = document.querySelector('input[name="payment_method"]:checked');
-        if (khqrRadio && khqrRadio.value === 'khqr') {
+        const khqrRadio = document.getElementById('tmCartMethodKhqr');
+        if (khqrRadio && khqrRadio.checked) {
             window.toggleCartKHQR(true);
         }
     };
 
+    window.stopCartPaymentPolling = function() {
+        if (cartPaymentPollingInterval) {
+            clearInterval(cartPaymentPollingInterval);
+            cartPaymentPollingInterval = null;
+        }
+    };
+
+    window.startCartPaymentPolling = function(orderCode) {
+        window.stopCartPaymentPolling();
+        if (!orderCode) return;
+
+        cartPaymentPollingInterval = setInterval(async () => {
+            try {
+                const res = await fetch(`/orders/check-status/${orderCode}`);
+                const data = await res.json();
+                if (data && data.is_paid) {
+                    window.stopCartPaymentPolling();
+                    
+                    const contentEl = document.getElementById('tmCartContent');
+                    if (contentEl) {
+                        contentEl.innerHTML = `
+                            <div class="py-12 px-4 text-center space-y-4">
+                                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold shadow-xs">✓</div>
+                                <h3 class="text-xl font-black text-slate-900">ការទូទាត់ទទួលបានជោគជ័យ!</h3>
+                                <p class="text-xs text-slate-600 max-w-sm mx-auto">
+                                    ប្រព័ន្ធបានទទួល និងផ្ទៀងផ្ទាត់ការទូទាត់តាម ABA / KHQR ដោយស្វ័យប្រវត្តិ។<br>
+                                    លេខកូដវិក្កយបត្រ៖ <strong class="text-emerald-700 font-mono">#${orderCode}</strong>
+                                </p>
+                                <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-800 text-left max-w-md mx-auto space-y-1">
+                                    <p class="font-bold flex items-center gap-1.5 text-emerald-900">
+                                        <span>✓</span> ការបញ្ជាទិញបានបញ្ចូលទៅក្នុងប្រព័ន្ធរួចរាល់
+                                    </p>
+                                    <p class="text-[11px] text-emerald-700">
+                                        ក្រុមការងារនឹងរៀបចំវេចខ្ចប់ និងដឹកជញ្ជូនសម្ភារៈទៅកាន់អាសយដ្ឋានរបស់អ្នកក្នុងពេលឆាប់ៗ។
+                                    </p>
+                                </div>
+                                <div class="pt-4">
+                                    <button type="button" onclick="window.saveTMCart([]); window.closeTMCartModal(); window.location.reload();" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-emerald-500/20 cursor-pointer">
+                                        យល់ព្រម
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    window.saveTMCart([]);
+                }
+            } catch (e) {
+                console.error('Polling error:', e);
+            }
+        }, 2500);
+    };
+
     window.openTMCartModal = function() {
-        currentCartCode = 'TM' + Math.floor(10000 + Math.random() * 90000);
+        if (!currentCartCode) {
+            currentCartCode = 'TM' + Math.floor(10000 + Math.random() * 90000);
+        }
         
         const codeInput = document.getElementById('tmGroupOrderCode');
         if (codeInput) codeInput.value = currentCartCode;
@@ -463,24 +523,77 @@
     };
 
     window.closeTMCartModal = function() {
+        window.stopCartPaymentPolling();
         const modal = document.getElementById('tmCartModal');
         if (modal) modal.classList.add('hidden');
     };
 
-    window.toggleCartKHQR = function(show) {
+    window.toggleCartKHQR = async function(show) {
         const section = document.getElementById('tmCartKhqrSection');
         if (!section) return;
 
         if (show) {
             section.classList.remove('hidden');
             const cart = window.getTMCart();
-            const totalPrice = cart.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
+            const totalPrice = cart.reduce((sum, item) => sum + ((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1)), 0);
 
-            if (totalPrice > 0 && typeof window.generateKHQR === 'function') {
-                window.generateKHQR('tmCartKHQRCanvas', totalPrice, 'កញ្ចប់សម្ភារៈបង្រៀន', currentCartCode);
+            if (totalPrice <= 0) {
+                return;
+            }
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                                  document.querySelector('#tmGroupOrderForm input[name="_token"]')?.value;
+                const nameVal = document.querySelector('#tmGroupOrderForm input[name="customer_name"]')?.value || '';
+                const phoneVal = document.querySelector('#tmGroupOrderForm input[name="customer_phone"]')?.value || '';
+
+                const res = await fetch('/teaching-materials/init-group-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({
+                        order_code: currentCartCode,
+                        cart_items: cart,
+                        customer_name: nameVal,
+                        customer_phone: phoneVal
+                    })
+                });
+
+                const data = await res.json();
+                if (data && data.success) {
+                    currentCartCode = data.order_code;
+                    
+                    const codeInput = document.getElementById('tmGroupOrderCode');
+                    if (codeInput) codeInput.value = currentCartCode;
+
+                    const displayCode = document.getElementById('tmGroupDisplayCode');
+                    if (displayCode) displayCode.textContent = '#' + currentCartCode;
+
+                    const refText = document.getElementById('tmCartRefText');
+                    if (refText) refText.textContent = '#' + currentCartCode;
+
+                    if (typeof window.generateKHQR === 'function') {
+                        await window.generateKHQR('tmCartKHQRCanvas', data.total_price, 'កញ្ចប់សម្ភារៈបង្រៀន', currentCartCode);
+                    }
+
+                    window.startCartPaymentPolling(currentCartCode);
+                } else if (typeof window.generateKHQR === 'function') {
+                    window.generateKHQR('tmCartKHQRCanvas', totalPrice, 'កញ្ចប់សម្ភារៈបង្រៀន', currentCartCode);
+                    window.startCartPaymentPolling(currentCartCode);
+                }
+            } catch (err) {
+                console.error('Error in init-group-order:', err);
+                if (typeof window.generateKHQR === 'function') {
+                    window.generateKHQR('tmCartKHQRCanvas', totalPrice, 'កញ្ចប់សម្ភារៈបង្រៀន', currentCartCode);
+                    window.startCartPaymentPolling(currentCartCode);
+                }
             }
         } else {
             section.classList.add('hidden');
+            window.stopCartPaymentPolling();
         }
     };
 
