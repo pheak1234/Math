@@ -69,6 +69,104 @@
                     </span>
                 </button>
 
+                <!-- Notification Bell (Auth Only) -->
+                @auth
+                    @php
+                        $headerUnreadCount = Auth::user()->unreadNotifications()->count();
+                        $headerNotifications = Auth::user()->notifications()->take(7)->get();
+                    @endphp
+                    <div class="relative">
+                        <button type="button" 
+                                onclick="toggleGlobalNotificationMenu(event)" 
+                                id="globalNotifBtn" 
+                                aria-label="Notifications" 
+                                class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-slate-600 hover:text-sky-600 hover:bg-sky-50 transition-all duration-200 cursor-pointer group" 
+                                title="ការជូនដំណឹង">
+                            <svg class="w-5 h-5 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            <span id="headerNotifBadge" 
+                                  style="{{ $headerUnreadCount > 0 ? 'display: flex;' : 'display: none;' }} position: absolute; top: -1px; right: -1px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9999px; background: linear-gradient(135deg, #ef4444, #dc2626); color: #ffffff; font-size: 10px; font-weight: 800; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #ffffff, 0 2px 4px rgba(220, 38, 38, 0.35); align-items: center; justify-content: center; z-index: 10; pointer-events: none;">
+                                {{ $headerUnreadCount > 99 ? '99+' : $headerUnreadCount }}
+                            </span>
+                        </button>
+
+                        <!-- Notification Dropdown -->
+                        <div id="globalNotifDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-100 py-0 z-50 text-sm overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                            <!-- Header -->
+                            <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-800 text-sm">ការជូនដំណឹង</span>
+                                    <span id="headerNotifPill" class="{{ $headerUnreadCount > 0 ? '' : 'hidden' }} px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-700">
+                                        <span id="headerNotifCountText">{{ $headerUnreadCount }}</span> ថ្មី
+                                    </span>
+                                </div>
+                                <button type="button" 
+                                        id="headerMarkAllBtn"
+                                        onclick="markAllNotificationsAsRead(event)" 
+                                        class="{{ $headerUnreadCount > 0 ? '' : 'hidden' }} text-xs text-sky-600 hover:text-sky-700 font-semibold cursor-pointer">
+                                    អានទាំងអស់
+                                </button>
+                            </div>
+
+                            <!-- List -->
+                            <div class="max-h-80 overflow-y-auto divide-y divide-slate-100" id="headerNotifList">
+                                @forelse($headerNotifications as $notif)
+                                    @php
+                                        $d = $notif->data;
+                                        $isApproved = ($d['type'] ?? '') === 'approved' || ($d['status'] ?? '') === 'completed';
+                                        $isUnread = is_null($notif->read_at);
+                                        $actionUrl = $d['action_url'] ?? route('dashboard', ['tab' => 'orders']);
+                                    @endphp
+                                    <a href="{{ $actionUrl }}" 
+                                       onclick="markNotificationAsRead('{{ $notif->id }}', event, '{{ $actionUrl }}')"
+                                       id="notif-item-{{ $notif->id }}"
+                                       class="p-3.5 flex items-start gap-3 hover:bg-slate-50 transition-colors block {{ $isUnread ? 'bg-sky-50/30' : '' }}">
+                                        <!-- Icon -->
+                                        <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 {{ $isApproved ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600' }}">
+                                            @if($isApproved)
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            @else
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            @endif
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center justify-between gap-1 mb-0.5">
+                                                <h5 class="text-xs font-bold text-slate-900 truncate">
+                                                    {{ $d['title'] ?? 'ការជូនដំណឹង' }}
+                                                </h5>
+                                                @if($isUnread)
+                                                    <span class="w-2 h-2 rounded-full bg-sky-500 shrink-0 notif-unread-dot"></span>
+                                                @endif
+                                            </div>
+                                            <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                                                {{ $d['body'] ?? '' }}
+                                            </p>
+                                            <span class="text-[10px] text-slate-400 mt-1 block font-mono">
+                                                {{ $notif->created_at->diffForHumans() }}
+                                            </span>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="p-8 text-center text-slate-400" id="headerNotifEmptyState">
+                                        <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2 text-lg">
+                                            🔔
+                                        </div>
+                                        <p class="text-xs">មិនទាន់មានការជូនដំណឹងនៅឡើយទេ</p>
+                                    </div>
+                                @endforelse
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
+                                <a href="{{ route('dashboard', ['tab' => 'orders']) }}" class="text-xs font-semibold text-slate-700 hover:text-sky-600 transition-colors block py-1">
+                                    មើលប្រវត្តិបញ្ជាទិញទាំងអស់ →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endauth
+
                 <!-- User Account / Profile -->
                 <div class="relative">
                     @auth
@@ -187,18 +285,110 @@
         if (e) e.stopPropagation();
         const dropdown = document.getElementById('globalUserDropdown');
         if (dropdown) dropdown.classList.toggle('hidden');
+        const notifDropdown = document.getElementById('globalNotifDropdown');
+        if (notifDropdown) notifDropdown.classList.add('hidden');
     }
 
-    // Close user dropdown when clicking outside
+    function toggleGlobalNotificationMenu(e) {
+        if (e) e.stopPropagation();
+        const notifDropdown = document.getElementById('globalNotifDropdown');
+        if (notifDropdown) notifDropdown.classList.toggle('hidden');
+        const userDropdown = document.getElementById('globalUserDropdown');
+        if (userDropdown) userDropdown.classList.add('hidden');
+    }
+
+    function markNotificationAsRead(id, e, targetUrl) {
+        if (e) e.preventDefault();
+
+        // Optimistically update UI
+        const item = document.getElementById('notif-item-' + id);
+        if (item) {
+            item.classList.remove('bg-sky-50/30');
+            const dot = item.querySelector('.notif-unread-dot');
+            if (dot) dot.remove();
+        }
+
+        fetch('/notifications/' + id + '/read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        }).then(r => r.json()).then(data => {
+            if (data && typeof data.unread_count !== 'undefined') {
+                updateNotificationBadgeCount(data.unread_count);
+            }
+        }).catch(err => console.warn('Could not mark read:', err))
+        .finally(() => {
+            if (targetUrl) {
+                window.location.href = targetUrl;
+            }
+        });
+    }
+
+    function markAllNotificationsAsRead(e) {
+        if (e) e.stopPropagation();
+
+        fetch('/notifications/mark-all-read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        }).then(r => r.json()).then(data => {
+            updateNotificationBadgeCount(0);
+            document.querySelectorAll('#headerNotifList a').forEach(el => el.classList.remove('bg-sky-50/30'));
+            document.querySelectorAll('.notif-unread-dot').forEach(el => el.remove());
+            const markBtn = document.getElementById('headerMarkAllBtn');
+            if (markBtn) markBtn.classList.add('hidden');
+            const pill = document.getElementById('headerNotifPill');
+            if (pill) pill.classList.add('hidden');
+        }).catch(err => console.warn('Could not mark all read:', err));
+    }
+
+    function updateNotificationBadgeCount(count) {
+        const badge = document.getElementById('headerNotifBadge');
+        const pill = document.getElementById('headerNotifPill');
+        const countText = document.getElementById('headerNotifCountText');
+        const markBtn = document.getElementById('headerMarkAllBtn');
+
+        if (count > 0) {
+            if (badge) {
+                badge.style.display = 'flex';
+                badge.textContent = count > 99 ? '99+' : count;
+            }
+            if (pill) pill.classList.remove('hidden');
+            if (countText) countText.textContent = count;
+            if (markBtn) markBtn.classList.remove('hidden');
+        } else {
+            if (badge) badge.style.display = 'none';
+            if (pill) pill.classList.add('hidden');
+            if (markBtn) markBtn.classList.add('hidden');
+        }
+    }
+
+    // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {
         const btn = document.getElementById('globalUserBtn');
         const dropdown = document.getElementById('globalUserDropdown');
         if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.classList.add('hidden');
         }
+
+        const notifBtn = document.getElementById('globalNotifBtn');
+        const notifDropdown = document.getElementById('globalNotifDropdown');
+        if (notifBtn && notifDropdown && !notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+            notifDropdown.classList.add('hidden');
+        }
     });
 
-    // Backward compatibility aliases
+    // Backward compatibility aliases & global exposures
     window.toggleUserMenu = toggleGlobalUserMenu;
     window.toggleMobileMenu = toggleGlobalMobileMenu;
+    window.toggleGlobalNotificationMenu = toggleGlobalNotificationMenu;
+    window.markNotificationAsRead = markNotificationAsRead;
+    window.markAllNotificationsAsRead = markAllNotificationsAsRead;
+    window.updateNotificationBadgeCount = updateNotificationBadgeCount;
 </script>

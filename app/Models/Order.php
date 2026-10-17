@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\OrderStatusNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -112,5 +113,25 @@ class Order extends Model
     public function isCancelled(): bool
     {
         return in_array($this->status, ['cancelled', 'rejected'], true);
+    }
+
+    /**
+     * Dispatch notification to the associated user upon status changes.
+     */
+    public function notifyUser(string $status, ?string $reason = null, ?string $customMessage = null): void
+    {
+        $user = $this->user;
+
+        if (! $user && $this->customer_phone) {
+            $user = User::where('phone', $this->customer_phone)->first();
+            if ($user) {
+                $this->user_id = $user->id;
+                $this->saveQuietly();
+            }
+        }
+
+        if ($user) {
+            $user->notify(new OrderStatusNotification($this, $status, $reason, $customMessage));
+        }
     }
 }

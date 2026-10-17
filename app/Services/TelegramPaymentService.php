@@ -332,9 +332,13 @@ class TelegramPaymentService
         $order->notes = trim(($order->notes ? $order->notes."\n" : '').$note);
         $order->save();
 
-        if ($order->book_id && $order->user_id) {
-            $user = User::find($order->user_id);
+        if ($order->book_id) {
+            $user = $order->user ?: ($order->customer_phone ? User::where('phone', $order->customer_phone)->first() : null);
             if ($user) {
+                if (! $order->user_id) {
+                    $order->user_id = $user->id;
+                    $order->saveQuietly();
+                }
                 $user->books()->syncWithoutDetaching([
                     $order->book_id => [
                         'status' => 'reading',
@@ -343,6 +347,8 @@ class TelegramPaymentService
                 ]);
             }
         }
+
+        $order->notifyUser('approved', null, 'ការទូទាត់ ABA PayWay ត្រូវបានផ្ទៀងផ្ទាត់ដោយស្វ័យប្រវត្តិ។');
     }
 
     /**

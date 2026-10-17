@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TeachingMaterialController;
 use App\Http\Controllers\TelegramWebhookController;
@@ -34,6 +35,12 @@ Route::post('/logout', function () {
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 Route::post('/dashboard/profile', [DashboardController::class, 'updateProfile'])->middleware('auth')->name('dashboard.profile.update');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+});
 
 Route::get('/', function () {
     $recentArticles = Article::orderByDesc('priority')

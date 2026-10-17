@@ -47,7 +47,10 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        return view('dashboard', compact('books', 'pendingOrders', 'allOrders', 'totalSpent', 'examAttempts', 'user', 'tab'));
+        $notifications = $user->notifications()->take(10)->get();
+        $unreadCount = $user->unreadNotifications()->count();
+
+        return view('dashboard', compact('books', 'pendingOrders', 'allOrders', 'totalSpent', 'examAttempts', 'user', 'tab', 'notifications', 'unreadCount'));
     }
 
     public function updateProfile(Request $request): RedirectResponse

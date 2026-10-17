@@ -138,10 +138,14 @@ class OrderResource extends Resource
                         $record->notes = trim(($record->notes ? $record->notes."\n" : '').'Approved by Admin in Filament on '.now());
                         $record->save();
 
-                        if ($record->book_id && $record->user_id) {
-                            $user = User::find($record->user_id);
-                            if ($user) {
-                                $user->books()->syncWithoutDetaching([
+                        if ($record->book_id) {
+                            $targetUser = $record->user ?: ($record->customer_phone ? User::where('phone', $record->customer_phone)->first() : null);
+                            if ($targetUser) {
+                                if (! $record->user_id) {
+                                    $record->user_id = $targetUser->id;
+                                    $record->saveQuietly();
+                                }
+                                $targetUser->books()->syncWithoutDetaching([
                                     $record->book_id => [
                                         'status' => 'reading',
                                         'progress' => 0,
@@ -150,9 +154,11 @@ class OrderResource extends Resource
                             }
                         }
 
+                        $record->notifyUser('approved');
+
                         Notification::make()
                             ->title('បានបញ្ជាក់ជោគជ័យ')
-                            ->body("ការបញ្ជាទិញ #{$record->order_code} ត្រូវបានអនុម័ត និងបើកសិទ្ធិអានជូនអតិថិជនរួចរាល់។")
+                            ->body("ការបញ្ជាទិញ #{$record->order_code} ត្រូវបានអនុម័ត និងបានផ្ញើដំណឹងជូនអតិថិជនរួចរាល់។")
                             ->success()
                             ->send();
                     }),
@@ -162,13 +168,27 @@ class OrderResource extends Resource
                     ->color('danger')
                     ->visible(fn (Order $record): bool => $record->status === 'pending')
                     ->requiresConfirmation()
-                    ->action(function (Order $record) {
+                    ->modalHeading('បដិសេធការបញ្ជាទិញ')
+                    ->modalDescription('សូមបញ្ជាក់ពីការបដិសេធការបញ្ជាទិញនេះ។ អ្នកអាចបញ្ចូលមូលហេតុដើម្បីផ្ញើដំណឹងជូនអតិថិជនបានដឹង។')
+                    ->form([
+                        Forms\Components\Textarea::make('reason')
+                            ->label('មូលហេតុបដិសេធ (Reason for Rejection)')
+                            ->placeholder('ឧទាហរណ៍៖ បង្កាន់ដៃមិនត្រឹមត្រូវ, មិនទាន់ទទួលបានប្រាក់ទូទាត់...')
+                            ->rows(3),
+                    ])
+                    ->action(function (Order $record, array $data) {
                         $record->status = 'cancelled';
+                        $reason = ! empty($data['reason']) ? trim($data['reason']) : null;
+                        if ($reason) {
+                            $record->notes = trim(($record->notes ? $record->notes."\n" : '')."Rejected by Admin: {$reason} on ".now());
+                        }
                         $record->save();
+
+                        $record->notifyUser('rejected', $reason);
 
                         Notification::make()
                             ->title('បានបដិសេធ')
-                            ->body("ការបញ្ជាទិញ #{$record->order_code} ត្រូវបានបដិសេធ។")
+                            ->body("ការបញ្ជាទិញ #{$record->order_code} ត្រូវបានបដិសេធ និងបានផ្ញើដំណឹងជូនអតិថិជនរួចរាល់។")
                             ->warning()
                             ->send();
                     }),

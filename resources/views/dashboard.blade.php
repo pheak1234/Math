@@ -104,6 +104,17 @@
                                 </span>
                             @endif
                         </a>
+                        @if(isset($unreadCount) && $unreadCount > 0)
+                            <div class="px-3.5 py-2 mt-2 bg-rose-50 rounded-xl border border-rose-100 flex items-center justify-between text-xs text-rose-700 font-medium">
+                                <span class="flex items-center gap-1.5 font-bold">
+                                    <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                                    <span>ដំណឹងថ្មី ({{ $unreadCount }})</span>
+                                </span>
+                                <button type="button" onclick="window.markAllNotificationsAsRead(event)" class="text-[11px] underline hover:text-rose-900 cursor-pointer">
+                                    អានទាំងអស់
+                                </button>
+                            </div>
+                        @endif
                     </nav>
                 </div>
             </div>
@@ -115,6 +126,57 @@
                     <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 font-medium flex items-center gap-3">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                         {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(isset($notifications) && $notifications->where('read_at', null)->count() > 0)
+                    <!-- Active Notifications from Admin Approval or Rejection -->
+                    <div class="mb-6 space-y-3" id="dashboardNotificationAlerts">
+                        @foreach($notifications->where('read_at', null)->take(3) as $alertNotif)
+                            @php
+                                $nd = $alertNotif->data;
+                                $isAlertApproved = ($nd['type'] ?? '') === 'approved' || ($nd['status'] ?? '') === 'completed';
+                                $alertAction = $nd['action_url'] ?? route('dashboard', ['tab' => 'orders']);
+                            @endphp
+                            <div class="p-4 sm:p-5 rounded-2xl border shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all {{ $isAlertApproved ? 'bg-gradient-to-r from-emerald-50 via-teal-50 to-white border-emerald-200' : 'bg-gradient-to-r from-rose-50 via-amber-50 to-white border-rose-200' }}"
+                                 id="notif-banner-{{ $alertNotif->id }}">
+                                <div class="flex items-start gap-3.5">
+                                    <div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs {{ $isAlertApproved ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white' }}">
+                                        @if($isAlertApproved)
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                        @else
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        @endif
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <h4 class="text-sm font-bold {{ $isAlertApproved ? 'text-emerald-950' : 'text-rose-950' }}">
+                                                {{ $nd['title'] ?? 'ការជូនដំណឹងពី Admin' }}
+                                            </h4>
+                                            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full {{ $isAlertApproved ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
+                                                {{ $alertNotif->created_at->diffForHumans() }}
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-slate-700 mt-1 leading-relaxed">
+                                            {{ $nd['body'] ?? '' }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                                    <a href="{{ $alertAction }}" 
+                                       onclick="dismissNotificationBanner('{{ $alertNotif->id }}', '{{ $alertAction }}')"
+                                       class="px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs {{ $isAlertApproved ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-900 hover:bg-slate-800 text-white' }}">
+                                        {{ $isAlertApproved && ($nd['book_id'] ?? null) ? '📖 ចូលអានឥឡូវនេះ' : 'មើលបញ្ជាទិញ' }}
+                                    </a>
+                                    <button type="button" 
+                                            onclick="dismissNotificationBanner('{{ $alertNotif->id }}')" 
+                                            class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer" 
+                                            title="បិទ (Dismiss)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 @endif
 
@@ -1156,6 +1218,34 @@
                 closeOrderInvoice();
             }
         });
+
+        function dismissNotificationBanner(id, redirectUrl) {
+            const banner = document.getElementById('notif-banner-' + id);
+            if (banner) {
+                banner.style.opacity = '0';
+                banner.style.transform = 'translateY(-10px)';
+                banner.style.transition = 'all 0.25s ease-out';
+                setTimeout(() => banner.remove(), 260);
+            }
+
+            fetch('/notifications/' + id + '/read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            }).then(r => r.json()).then(data => {
+                if (data && typeof data.unread_count !== 'undefined' && window.updateNotificationBadgeCount) {
+                    window.updateNotificationBadgeCount(data.unread_count);
+                }
+            }).catch(err => console.warn('Could not mark banner read:', err))
+            .finally(() => {
+                if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                }
+            });
+        }
     </script>
 </body>
 </html>
