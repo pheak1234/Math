@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class TeachingMaterial extends Model
 {
@@ -25,6 +26,13 @@ class TeachingMaterial extends Model
     ];
 
     /**
+     * @var list<string>
+     */
+    protected $appends = [
+        'image_url',
+    ];
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array
@@ -33,6 +41,19 @@ class TeachingMaterial extends Model
             'is_featured' => 'boolean',
             'price' => 'decimal:2',
         ];
+    }
+
+    public function getImageUrlAttribute(): string
+    {
+        if (! $this->image) {
+            return asset('images/tool_ruler.svg');
+        }
+
+        if (str_starts_with($this->image, '/') || str_starts_with($this->image, 'http')) {
+            return $this->image;
+        }
+
+        return Storage::url($this->image);
     }
 
     public function orders()

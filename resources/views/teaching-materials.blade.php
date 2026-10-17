@@ -104,7 +104,7 @@
                     
                     <!-- Item Image Preview -->
                     <a href="{{ route('teaching-materials.show', $item) }}" class="aspect-square w-full bg-slate-50 p-6 flex items-center justify-center relative overflow-hidden border-b {{ $item->price > 0 ? 'border-amber-100' : 'border-slate-100' }} block">
-                        <img src="{{ $item->image ?? '/images/tool_ruler.svg' }}" 
+                        <img src="{{ $item->image_url }}" 
                              alt="{{ $item->name }}" 
                              class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 filter drop-shadow-sm" />
                         
