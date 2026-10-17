@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Order extends Model
 {
@@ -26,6 +27,14 @@ class Order extends Model
         'notes',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'total_price' => 'decimal:2',
+            'quantity' => 'integer',
+        ];
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -39,5 +48,69 @@ class Order extends Model
     public function book(): BelongsTo
     {
         return $this->belongsTo(Book::class);
+    }
+
+    public function getItemNameAttribute(): string
+    {
+        if ($this->book) {
+            return $this->book->title;
+        }
+
+        if ($this->teachingMaterial) {
+            return $this->teachingMaterial->name;
+        }
+
+        if ($this->notes && str_contains($this->notes, 'Group Order')) {
+            return 'កញ្ចប់សម្ភារៈបង្រៀន (Group Order)';
+        }
+
+        return 'ផលិតផលគណិតវិទ្យា';
+    }
+
+    public function getItemImageAttribute(): string
+    {
+        if ($this->book) {
+            if ($this->book->cover_image) {
+                return str_starts_with($this->book->cover_image, '/') || str_starts_with($this->book->cover_image, 'http')
+                    ? $this->book->cover_image
+                    : Storage::url($this->book->cover_image);
+            }
+
+            return asset('images/book_math_blue.svg');
+        }
+
+        if ($this->teachingMaterial) {
+            return $this->teachingMaterial->image_url;
+        }
+
+        return asset('images/tool_ruler.svg');
+    }
+
+    public function getReceiptUrlAttribute(): ?string
+    {
+        if (! $this->payment_receipt) {
+            return null;
+        }
+
+        if (str_starts_with($this->payment_receipt, '/') || str_starts_with($this->payment_receipt, 'http')) {
+            return $this->payment_receipt;
+        }
+
+        return Storage::url($this->payment_receipt);
+    }
+
+    public function isSuccessful(): bool
+    {
+        return in_array($this->status, ['approved', 'completed'], true);
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isCancelled(): bool
+    {
+        return in_array($this->status, ['cancelled', 'rejected'], true);
     }
 }

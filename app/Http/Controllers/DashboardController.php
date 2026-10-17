@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExamAttempt;
+use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -16,23 +19,35 @@ class DashboardController extends Controller
         $user = Auth::user();
         $tab = $request->query('tab', 'books');
         $books = $user->books()->orderByPivot('last_read_at', 'desc')->paginate(6);
-        $pendingOrders = $user->orders()
+        $pendingOrders = Order::where(function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+            if (! empty($user->phone)) {
+                $query->orWhere('customer_phone', $user->phone);
+            }
+        })
             ->where('status', 'pending')
             ->with(['book', 'teachingMaterial'])
             ->latest()
             ->get();
 
-        $allOrders = $user->orders()
+        $allOrders = Order::where(function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+            if (! empty($user->phone)) {
+                $query->orWhere('customer_phone', $user->phone);
+            }
+        })
             ->with(['book', 'teachingMaterial'])
             ->latest()
             ->get();
 
-        $examAttempts = \App\Models\ExamAttempt::where('user_id', $user->id)
+        $totalSpent = $allOrders->filter(fn ($o) => $o->isSuccessful())->sum('total_price');
+
+        $examAttempts = ExamAttempt::where('user_id', $user->id)
             ->with('exam.questions')
             ->latest()
             ->get();
 
-        return view('dashboard', compact('books', 'pendingOrders', 'allOrders', 'examAttempts', 'user', 'tab'));
+        return view('dashboard', compact('books', 'pendingOrders', 'allOrders', 'totalSpent', 'examAttempts', 'user', 'tab'));
     }
 
     public function updateProfile(Request $request): RedirectResponse
@@ -96,7 +111,7 @@ class DashboardController extends Controller
 
         // If password was changed, sign out from all other devices for security
         if ($passwordChanged && config('session.driver') === 'database') {
-            \Illuminate\Support\Facades\DB::table('sessions')
+            DB::table('sessions')
                 ->where('user_id', $user->id)
                 ->where('id', '!=', request()->session()->getId())
                 ->delete();

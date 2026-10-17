@@ -27,6 +27,28 @@
             width: 100% !important;
             height: 100% !important;
         }
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            #orderInvoiceModal, #orderInvoiceModal * {
+                visibility: visible !important;
+            }
+            #orderInvoiceModal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                background: white !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                display: block !important;
+            }
+            #orderInvoiceModal button {
+                display: none !important;
+            }
+        }
     </style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -71,9 +93,16 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                             ព័ត៌មានផ្ទាល់ខ្លួន
                         </a>
-                        <a href="{{ route('dashboard', ['tab' => 'orders']) }}" id="tab-btn-orders" onclick="switchDashboardTab('orders', event)" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium {{ $activeTab === 'orders' ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-50' }} transition-colors cursor-pointer">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                            ប្រវត្តិការបញ្ជាទិញ
+                        <a href="{{ route('dashboard', ['tab' => 'orders']) }}" id="tab-btn-orders" onclick="switchDashboardTab('orders', event)" class="flex items-center justify-between px-4 py-3 rounded-xl font-medium {{ $activeTab === 'orders' ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-50' }} transition-colors cursor-pointer">
+                            <span class="flex items-center gap-3">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                                <span>ប្រវត្តិការបញ្ជាទិញ</span>
+                            </span>
+                            @if(isset($allOrders) && $allOrders->count() > 0)
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full {{ $allOrders->where('status', 'pending')->count() > 0 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600' }}">
+                                    {{ $allOrders->count() }}
+                                </span>
+                            @endif
                         </a>
                     </nav>
                 </div>
@@ -341,46 +370,332 @@
                     </div>
                 </div>
 
-                <!-- TAB 4: ORDERS -->
+                <!-- TAB 4: ORDERS (Purchase History) -->
                 <div id="tab-content-orders" class="dashboard-tab-pane {{ $activeTab === 'orders' ? '' : 'hidden' }}">
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-slate-900">ប្រវត្តិការបញ្ជាទិញ</h2>
-                        <p class="text-slate-500 text-sm mt-1">មើលការបញ្ជាទិញ និងវិក្កយបត្រទាំងអស់របស់អ្នក។</p>
+                    <!-- Header -->
+                    <div class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900">ប្រវត្តិការបញ្ជាទិញ (Purchase History)</h2>
+                            <p class="text-slate-500 text-sm mt-1">ពិនិត្យតាមដានស្ថានភាពទំនិញ វិក្កយបត្រ និងការទូទាត់ទាំងអស់របស់អ្នក។</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('teaching-materials.index') }}" class="px-3.5 py-2 rounded-xl border border-slate-200 hover:border-sky-300 bg-white text-slate-700 hover:text-sky-600 text-xs font-semibold transition-all shadow-2xs flex items-center gap-1.5">
+                                <span>🛒</span>
+                                <span>ទិញសម្ភារៈ</span>
+                            </a>
+                            <a href="/books" class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5">
+                                <span>📚</span>
+                                <span>ទិញសៀវភៅ</span>
+                            </a>
+                        </div>
                     </div>
 
                     @if(isset($allOrders) && $allOrders->count() > 0)
-                        <div class="space-y-4">
+                        <!-- 4 Summary Stats Cards -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
+                                <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1.5">
+                                    <span>ការបញ្ជាទិញសរុប</span>
+                                    <span class="w-6 h-6 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center text-xs font-bold">📦</span>
+                                </div>
+                                <div class="text-2xl font-black text-slate-900">{{ $allOrders->count() }}</div>
+                            </div>
+                            
+                            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
+                                <div class="flex items-center justify-between text-emerald-600 text-xs font-medium mb-1.5">
+                                    <span>ជោគជ័យ / យល់ព្រម</span>
+                                    <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">✓</span>
+                                </div>
+                                <div class="text-2xl font-black text-emerald-600">{{ $allOrders->filter(fn($o) => $o->isSuccessful())->count() }}</div>
+                            </div>
+
+                            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
+                                <div class="flex items-center justify-between text-amber-600 text-xs font-medium mb-1.5">
+                                    <span>រង់ចាំការពិនិត្យ</span>
+                                    <span class="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs font-bold">⏳</span>
+                                </div>
+                                <div class="text-2xl font-black text-amber-600">{{ $allOrders->filter(fn($o) => $o->isPending())->count() }}</div>
+                            </div>
+
+                            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
+                                <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1.5">
+                                    <span>ទឹកប្រាក់បានទូទាត់</span>
+                                    <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-xs font-bold font-mono">$</span>
+                                </div>
+                                <div class="text-2xl font-black text-slate-900">${{ number_format($totalSpent ?? 0, 2) }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Filter Pills -->
+                        <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-5 no-scrollbar text-xs font-semibold">
+                            <button type="button" onclick="filterOrderHistory('all', this)" class="order-filter-pill px-3.5 py-1.5 rounded-xl bg-sky-600 text-white shadow-xs cursor-pointer">
+                                ទាំងអស់ ({{ $allOrders->count() }})
+                            </button>
+                            <button type="button" onclick="filterOrderHistory('teaching_material', this)" class="order-filter-pill px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer">
+                                🛒 សម្ភារៈបង្រៀន ({{ $allOrders->whereNotNull('teaching_material_id')->count() }})
+                            </button>
+                            <button type="button" onclick="filterOrderHistory('book', this)" class="order-filter-pill px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer">
+                                📚 សៀវភៅ ({{ $allOrders->whereNotNull('book_id')->count() }})
+                            </button>
+                            <button type="button" onclick="filterOrderHistory('pending', this)" class="order-filter-pill px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer">
+                                ⏳ កំពុងរង់ចាំ ({{ $allOrders->filter(fn($o) => $o->isPending())->count() }})
+                            </button>
+                            <button type="button" onclick="filterOrderHistory('approved', this)" class="order-filter-pill px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer">
+                                ✓ ជោគជ័យ ({{ $allOrders->filter(fn($o) => $o->isSuccessful())->count() }})
+                            </button>
+                        </div>
+
+                        <!-- Orders List -->
+                        <div class="space-y-4" id="ordersContainer">
                             @foreach($allOrders as $order)
-                                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                    <div>
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="font-mono text-xs font-bold text-slate-500">#{{ $order->order_code ?? $order->id }}</span>
-                                            @if($order->status === 'approved')
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">ជោគជ័យ</span>
-                                            @elseif($order->status === 'pending')
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">រង់ចាំពិនិត្យ</span>
+                                @php
+                                    $itemType = $order->book_id ? 'book' : 'teaching_material';
+                                    $statusCategory = $order->isSuccessful() ? 'approved' : ($order->isPending() ? 'pending' : 'cancelled');
+                                    $itemImg = $order->item_image;
+                                    $itemName = $order->item_name;
+                                    $detailUrl = $order->book_id 
+                                        ? route('books.show', $order->book_id) 
+                                        : ($order->teaching_material_id ? route('teaching-materials.show', $order->teaching_material_id) : '#');
+                                @endphp
+
+                                <div class="order-item-card bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all p-5 sm:p-6"
+                                     data-type="{{ $itemType }}"
+                                     data-status="{{ $statusCategory }}">
+                                    
+                                    <!-- Card Header: Code, Date, Status -->
+                                    <div class="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-slate-100 mb-4">
+                                        <div class="flex items-center gap-2.5">
+                                            <span class="inline-flex items-center gap-1 font-mono font-bold text-xs sm:text-sm text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                                                <span>#{{ $order->order_code ?? ('ORD-'.$order->id) }}</span>
+                                            </span>
+                                            <span class="text-xs text-slate-400">
+                                                {{ $order->created_at->format('d/m/Y, h:i A') }}
+                                            </span>
+                                        </div>
+
+                                        <!-- Status Badge -->
+                                        <div>
+                                            @if($order->isSuccessful())
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                    <span>ជោគជ័យ (Completed)</span>
+                                                </span>
+                                            @elseif($order->isPending())
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                    <svg class="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                    <span>រង់ចាំការពិនិត្យ (Pending Review)</span>
+                                                </span>
                                             @else
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">បដិសេធ</span>
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                    <span>បានបដិសេធ (Cancelled)</span>
+                                                </span>
                                             @endif
                                         </div>
-                                        <h4 class="font-bold text-slate-900 text-sm">{{ $order->book->title ?? $order->teachingMaterial->title ?? 'ផលិតផល' }}</h4>
-                                        <p class="text-xs text-slate-400 mt-0.5">{{ $order->created_at->format('d/m/Y H:i') }}</p>
                                     </div>
-                                    <div class="text-right sm:text-right w-full sm:w-auto">
-                                        <div class="font-black text-slate-900 text-base">${{ number_format($order->amount ?? 0, 2) }}</div>
+
+                                    <!-- Card Main Content -->
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                        <!-- Item thumbnail and details -->
+                                        <div class="flex items-start gap-4 min-w-0 flex-1">
+                                            <a href="{{ $detailUrl }}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-slate-50 border border-slate-200/80 shrink-0 block group">
+                                                <img src="{{ $itemImg }}" alt="{{ $itemName }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                            </a>
+
+                                            <div class="min-w-0 flex-1 space-y-1">
+                                                <div class="flex items-center gap-2">
+                                                    @if($order->book_id)
+                                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-100">
+                                                            📚 សៀវភៅ
+                                                        </span>
+                                                    @else
+                                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-100">
+                                                            🛒 សម្ភារៈបង្រៀន
+                                                        </span>
+                                                    @endif
+                                                    <span class="text-xs text-slate-500 font-medium">
+                                                        ចំនួន៖ <strong class="text-slate-800">{{ $order->quantity }}</strong>
+                                                    </span>
+                                                </div>
+
+                                                <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-1 hover:text-sky-600 transition-colors">
+                                                    <a href="{{ $detailUrl }}">{{ $itemName }}</a>
+                                                </h3>
+
+                                                <!-- Meta / Notes Preview -->
+                                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 pt-0.5">
+                                                    <span class="inline-flex items-center gap-1">
+                                                        @if($order->payment_method === 'khqr')
+                                                            <span>💳</span> <span>ABA / KHQR</span>
+                                                        @else
+                                                            <span>🚚</span> <span>បង់ពេលទទួល (COD)</span>
+                                                        @endif
+                                                    </span>
+
+                                                    @if($order->customer_address)
+                                                        <span class="inline-flex items-center gap-1 truncate max-w-xs" title="{{ $order->customer_address }}">
+                                                            <span>📍</span> <span>{{ $order->customer_address }}</span>
+                                                        </span>
+                                                    @endif
+                                                </div>
+
+                                                @if($order->notes)
+                                                    <p class="text-[11px] text-slate-400 line-clamp-1 mt-1 font-mono">
+                                                        {{ Str::limit($order->notes, 80) }}
+                                                    </p>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <!-- Price and Action Buttons -->
+                                        <div class="w-full sm:w-auto flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
+                                            <div class="text-left sm:text-right">
+                                                <div class="text-xs text-slate-400 font-medium">ទឹកប្រាក់សរុប</div>
+                                                <div class="text-xl sm:text-2xl font-black text-slate-900">
+                                                    ${{ number_format($order->total_price ?? 0, 2) }}
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-2">
+                                                <!-- View Invoice Button -->
+                                                <button type="button" 
+                                                        onclick="openOrderInvoice({{ json_encode($order) }}, {{ json_encode($itemName) }}, {{ json_encode($itemImg) }})"
+                                                        class="px-3 py-1.5 rounded-xl border border-slate-200 hover:border-sky-400 bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-600 text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer shadow-2xs">
+                                                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                                    <span>វិក្កយបត្រ</span>
+                                                </button>
+
+                                                @if($order->book_id && $order->isSuccessful())
+                                                    <a href="{{ route('books.read', $order->book_id) }}" 
+                                                       class="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1">
+                                                        <span>📖</span> <span>អាន</span>
+                                                    </a>
+                                                @elseif($order->teaching_material_id)
+                                                    <a href="{{ route('teaching-materials.show', $order->teaching_material_id) }}" 
+                                                       class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1">
+                                                        <span>🔍</span> <span>មើល</span>
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
                     @else
-                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-10 flex flex-col items-center justify-center text-center">
-                            <h2 class="text-xl font-bold text-slate-800 mb-2">មិនមានប្រវត្តិបញ្ជាទិញទេ</h2>
-                            <p class="text-slate-500 text-sm max-w-sm mx-auto mb-6">អ្នកមិនទាន់មានការបញ្ជាទិញណាមួយនៅឡើយទេ។</p>
-                            <a href="/books" class="px-6 py-2.5 bg-sky-600 text-white rounded-xl text-sm font-semibold hover:bg-sky-700 transition-colors shadow-sm">
-                                រុករកសៀវភៅឥឡូវនេះ
-                            </a>
+                        <!-- Empty State -->
+                        <div class="bg-white rounded-3xl shadow-xs border border-slate-200/90 p-10 sm:p-14 flex flex-col items-center justify-center text-center">
+                            <div class="w-16 h-16 rounded-3xl bg-sky-50 text-sky-600 flex items-center justify-center text-3xl mb-4 shadow-inner">
+                                🛒
+                            </div>
+                            <h2 class="text-xl font-bold text-slate-900 mb-1.5">មិនទាន់មានប្រវត្តិបញ្ជាទិញនៅឡើយទេ</h2>
+                            <p class="text-slate-500 text-sm max-w-md mx-auto mb-6 leading-relaxed">
+                                នៅពេលអ្នកទិញសៀវភៅ ឬសម្ភារៈបង្រៀនគណិតវិទ្យា ប្រវត្តិបញ្ជាទិញ វិក្កយបត្រ និងស្ថានភាពទំនិញនឹងបង្ហាញនៅទីនេះ។
+                            </p>
+                            <div class="flex flex-wrap items-center justify-center gap-3">
+                                <a href="{{ route('teaching-materials.index') }}" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md">
+                                    🛒 រុករកសម្ភារៈបង្រៀន
+                                </a>
+                                <a href="/books" class="px-5 py-2.5 bg-sky-600 text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-sky-500 transition-all shadow-md">
+                                    📚 រុករកសៀវភៅគណិតវិទ្យា
+                                </a>
+                            </div>
                         </div>
                     @endif
+                </div>
+
+                <!-- ORDER INVOICE MODAL (Printable / Detailed Slip) -->
+                <div id="orderInvoiceModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative animate-in fade-in zoom-in-95 duration-200">
+                        <!-- Close button -->
+                        <button type="button" onclick="closeOrderInvoice()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer" title="បិទ">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+
+                        <div id="printableInvoiceArea">
+                            <!-- Invoice Header -->
+                            <div class="flex items-center justify-between pb-5 border-b border-slate-200">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-lg bg-sky-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                                            A
+                                        </div>
+                                        <h3 class="font-extrabold text-slate-900 text-lg tracking-tight">ANONTAK MATH</h3>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 mt-1">វិទ្យាស្ថានស្រាវជ្រាវ និងអភិវឌ្ឍន៍គណិតវិទ្យា</p>
+                                </div>
+                                <div class="text-right pr-8">
+                                    <span class="text-xs uppercase font-mono font-bold text-slate-400 block">វិក្កយបត្រ / INVOICE</span>
+                                    <span id="invOrderCode" class="text-sm font-mono font-black text-sky-600 block">#</span>
+                                </div>
+                            </div>
+
+                            <!-- Customer & Order Meta -->
+                            <div class="grid grid-cols-2 gap-4 py-4 text-xs border-b border-slate-100">
+                                <div>
+                                    <span class="text-slate-400 block mb-0.5">អតិថិជន៖</span>
+                                    <strong id="invCustomerName" class="text-slate-800 block text-sm">-</strong>
+                                    <span id="invCustomerPhone" class="text-slate-600 block mt-0.5">-</span>
+                                    <span id="invCustomerAddress" class="text-slate-500 block mt-0.5">-</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-slate-400 block mb-0.5">កាលបរិច្ឆេទ៖</span>
+                                    <strong id="invOrderDate" class="text-slate-800 block">-</strong>
+                                    <span class="text-slate-400 block mt-2">វិធីសាស្ត្រទូទាត់៖</span>
+                                    <strong id="invPaymentMethod" class="text-slate-700 block">-</strong>
+                                    <div id="invStatusBadge" class="mt-2 inline-block"></div>
+                                </div>
+                            </div>
+
+                            <!-- Item Table -->
+                            <div class="py-4 border-b border-slate-200">
+                                <div class="flex items-center gap-3.5 mb-3 p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <img id="invItemImg" src="" alt="" class="w-12 h-12 rounded-xl object-cover bg-white border border-slate-200 shrink-0">
+                                    <div class="min-w-0 flex-1">
+                                        <h4 id="invItemName" class="text-xs sm:text-sm font-bold text-slate-900 truncate">-</h4>
+                                        <p id="invItemQty" class="text-[11px] text-slate-500 mt-0.5">-</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div id="invTotalPrice" class="text-base sm:text-lg font-black text-slate-900">$0.00</div>
+                                    </div>
+                                </div>
+
+                                <!-- Detailed Breakdown if group order notes exist -->
+                                <div id="invNotesSection" class="hidden p-3 bg-amber-50/60 rounded-xl border border-amber-100 text-xs text-amber-900">
+                                    <strong class="block mb-1 text-[11px] font-bold text-amber-800">ព័ត៌មានលម្អិតមុខទំនិញ៖</strong>
+                                    <pre id="invNotesText" class="whitespace-pre-wrap font-sans text-xs text-amber-950"></pre>
+                                </div>
+
+                                <!-- Receipt preview if uploaded -->
+                                <div id="invReceiptPreviewSection" class="hidden mt-3 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+                                    <span class="block mb-2 text-slate-600 font-semibold flex items-center gap-1.5">
+                                        <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        <span>បង្កាន់ដៃបង់ប្រាក់ (Payment Receipt)</span>
+                                    </span>
+                                    <a id="invReceiptLink" href="#" target="_blank" class="block w-28 h-28 rounded-lg overflow-hidden border border-slate-200 hover:border-sky-400 shadow-2xs">
+                                        <img id="invReceiptImg" src="" alt="Receipt" class="w-full h-full object-cover">
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Total Summary Row -->
+                            <div class="pt-4 flex items-center justify-between">
+                                <span class="text-sm font-bold text-slate-600">សរុបទឹកប្រាក់ត្រូវទូទាត់៖</span>
+                                <span id="invGrandTotal" class="text-2xl font-black text-slate-900">$0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Modal Actions -->
+                        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                            <button type="button" onclick="closeOrderInvoice()" class="px-5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer">
+                                បិទ (Close)
+                            </button>
+                            <button type="button" onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                <span>បោះពុម្ព (Print)</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -674,6 +989,173 @@
             if (recropBtn) recropBtn.classList.add('hidden');
             if (removeInput) removeInput.value = '1';
         }
+
+        // ==========================================
+        // Purchase History & Invoice Functions
+        // ==========================================
+        function filterOrderHistory(type, btn) {
+            // Update filter pill active styling
+            document.querySelectorAll('.order-filter-pill').forEach(el => {
+                el.classList.remove('bg-sky-600', 'text-white', 'shadow-xs');
+                el.classList.add('bg-white', 'border', 'border-slate-200', 'text-slate-600', 'hover:bg-slate-50');
+            });
+            if (btn) {
+                btn.classList.add('bg-sky-600', 'text-white', 'shadow-xs');
+                btn.classList.remove('bg-white', 'border', 'border-slate-200', 'text-slate-600', 'hover:bg-slate-50');
+            }
+
+            // Filter order cards
+            const cards = document.querySelectorAll('.order-item-card');
+            cards.forEach(card => {
+                const cardType = card.dataset.type;
+                const cardStatus = card.dataset.status;
+
+                let shouldShow = false;
+                if (type === 'all') {
+                    shouldShow = true;
+                } else if (type === 'teaching_material' || type === 'book') {
+                    shouldShow = (cardType === type);
+                } else if (type === 'pending' || type === 'approved') {
+                    shouldShow = (cardStatus === type);
+                }
+
+                if (shouldShow) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function openOrderInvoice(order, itemName, itemImg) {
+            if (!order) return;
+
+            const modal = document.getElementById('orderInvoiceModal');
+            if (!modal) return;
+
+            // Invoice Code & Dates
+            const codeEl = document.getElementById('invOrderCode');
+            if (codeEl) codeEl.textContent = '#' + (order.order_code || ('ORD-' + order.id));
+
+            const dateEl = document.getElementById('invOrderDate');
+            if (dateEl) {
+                if (order.created_at) {
+                    const d = new Date(order.created_at);
+                    dateEl.textContent = !isNaN(d) ? d.toLocaleString('km-KH', { dateStyle: 'medium', timeStyle: 'short' }) : order.created_at;
+                } else {
+                    dateEl.textContent = '-';
+                }
+            }
+
+            // Customer Info
+            const nameEl = document.getElementById('invCustomerName');
+            if (nameEl) nameEl.textContent = order.customer_name || '-';
+
+            const phoneEl = document.getElementById('invCustomerPhone');
+            if (phoneEl) phoneEl.textContent = order.customer_phone ? ('ទូរស័ព្ទ៖ ' + order.customer_phone) : '-';
+
+            const addrEl = document.getElementById('invCustomerAddress');
+            if (addrEl) addrEl.textContent = order.customer_address ? ('អាសយដ្ឋាន៖ ' + order.customer_address) : 'មិនមានអាសយដ្ឋានដឹកជញ្ជូន';
+
+            // Payment Method
+            const payEl = document.getElementById('invPaymentMethod');
+            if (payEl) {
+                const pm = (order.payment_method || '').toLowerCase();
+                if (pm === 'cod') {
+                    payEl.textContent = 'សាច់ប្រាក់ពេលទទួល (Cash on Delivery)';
+                } else {
+                    payEl.textContent = 'KHQR / ធនាគារ (ABA, Bakong)';
+                }
+            }
+
+            // Status Badge
+            const statusEl = document.getElementById('invStatusBadge');
+            if (statusEl) {
+                const st = (order.status || '').toLowerCase();
+                if (st === 'approved' || st === 'completed') {
+                    statusEl.innerHTML = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">✓ ជោគជ័យ (Completed)</span>';
+                } else if (st === 'pending') {
+                    statusEl.innerHTML = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">⏳ រង់ចាំពិនិត្យ (Pending)</span>';
+                } else {
+                    statusEl.innerHTML = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800">✕ បានបដិសេធ (Cancelled)</span>';
+                }
+            }
+
+            // Item Details
+            const imgEl = document.getElementById('invItemImg');
+            if (imgEl) {
+                imgEl.src = itemImg || '/images/default-thumbnail.svg';
+                imgEl.alt = itemName || 'ផលិតផល';
+            }
+
+            const itemNameEl = document.getElementById('invItemName');
+            if (itemNameEl) itemNameEl.textContent = itemName || 'ផលិតផលគណិតវិទ្យា';
+
+            const qty = parseInt(order.quantity, 10) || 1;
+            const totalPrice = parseFloat(order.total_price) || 0;
+            const unitPrice = totalPrice / Math.max(1, qty);
+
+            const qtyEl = document.getElementById('invItemQty');
+            if (qtyEl) qtyEl.textContent = `ចំនួន៖ ${qty} x $${unitPrice.toFixed(2)}`;
+
+            const priceEl = document.getElementById('invTotalPrice');
+            if (priceEl) priceEl.textContent = `$${totalPrice.toFixed(2)}`;
+
+            const grandTotalEl = document.getElementById('invGrandTotal');
+            if (grandTotalEl) grandTotalEl.textContent = `$${totalPrice.toFixed(2)}`;
+
+            // Notes / Group order details
+            const notesSec = document.getElementById('invNotesSection');
+            const notesText = document.getElementById('invNotesText');
+            if (notesSec && notesText) {
+                if (order.notes && order.notes.trim()) {
+                    notesText.textContent = order.notes.trim();
+                    notesSec.classList.remove('hidden');
+                } else {
+                    notesSec.classList.add('hidden');
+                }
+            }
+
+            // Payment Receipt Screenshot
+            const receiptSec = document.getElementById('invReceiptPreviewSection');
+            const receiptImg = document.getElementById('invReceiptImg');
+            const receiptLink = document.getElementById('invReceiptLink');
+            if (receiptSec && receiptImg && receiptLink) {
+                if (order.payment_receipt) {
+                    const receiptUrl = order.payment_receipt.startsWith('http')
+                        ? order.payment_receipt
+                        : '/storage/' + order.payment_receipt.replace(/^\/+/, '');
+                    receiptImg.src = receiptUrl;
+                    receiptLink.href = receiptUrl;
+                    receiptSec.classList.remove('hidden');
+                } else {
+                    receiptSec.classList.add('hidden');
+                }
+            }
+
+            // Show modal
+            modal.classList.remove('hidden');
+        }
+
+        function closeOrderInvoice() {
+            const modal = document.getElementById('orderInvoiceModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        // Close invoice modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('orderInvoiceModal');
+            if (modal && !modal.classList.contains('hidden') && e.target === modal) {
+                closeOrderInvoice();
+            }
+        });
+
+        // Close on ESC key
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeOrderInvoice();
+            }
+        });
     </script>
 </body>
 </html>
