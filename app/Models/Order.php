@@ -123,7 +123,15 @@ class Order extends Model
         $user = $this->user;
 
         if (! $user && $this->customer_phone) {
-            $user = User::where('phone', $this->customer_phone)->first();
+            $digits = preg_replace('/[^0-9]/', '', $this->customer_phone);
+            $normalized = preg_replace('/^(855|0)/', '', $digits);
+
+            $user = User::where('phone', $this->customer_phone)
+                ->orWhere('phone', $digits)
+                ->orWhere('phone', '0'.$normalized)
+                ->orWhere('phone', '855'.$normalized)
+                ->first();
+
             if ($user) {
                 $this->user_id = $user->id;
                 $this->saveQuietly();
