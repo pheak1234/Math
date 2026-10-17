@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 380" width="100%" height="100%">
-  <rect width="280" height="380" fill="#fef08a" rx="6"/>
+  <rect width="280" height="380" fill="#fef08a"/>
   <rect x="10" y="10" width="260" height="360" fill="none" stroke="#ca8a04" stroke-width="3" rx="4"/>
   <rect x="20" y="25" width="240" height="85" fill="#b91c1c" rx="4"/>
   <text x="140" y="55" font-family="sans-serif" font-weight="900" font-size="14" fill="#fde047" text-anchor="middle">អក្សរសិល្ប៍ និងប្រវត្តិសាស្ត្រ</text>

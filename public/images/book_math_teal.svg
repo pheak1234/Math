@@ -6,7 +6,7 @@
       <stop offset="100%" stop-color="#042f2e"/>
     </linearGradient>
   </defs>
-  <rect width="300" height="400" fill="url(#bgTeal)" rx="8"/>
+  <rect width="300" height="400" fill="url(#bgTeal)"/>
   <text x="150" y="65" font-family="sans-serif" font-weight="900" font-size="24" fill="#ffffff" text-anchor="middle">Mathematics</text>
   <circle cx="250" cy="60" r="18" fill="#e11d48"/>
   <text x="250" y="67" font-family="sans-serif" font-weight="900" font-size="18" fill="#ffffff" text-anchor="middle">6</text>

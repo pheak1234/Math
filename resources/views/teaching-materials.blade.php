@@ -103,11 +103,11 @@
                 <div class="group bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden">
                     
                     <!-- Item Image Preview -->
-                    <div class="relative aspect-square w-full bg-slate-50/70 group-hover:bg-slate-100/50 transition-colors p-4 sm:p-5 flex items-center justify-center overflow-hidden border-b border-slate-100">
-                        <a href="{{ route('teaching-materials.show', $item) }}" class="w-full h-full flex items-center justify-center">
+                    <div class="relative aspect-square w-full bg-slate-50 overflow-hidden border-b border-slate-100">
+                        <a href="{{ route('teaching-materials.show', $item) }}" class="block w-full h-full">
                             <img src="{{ $item->image_url }}" 
                                  alt="{{ $item->name }}" 
-                                 class="max-w-full max-h-full object-contain filter drop-shadow-xs group-hover:scale-105 transition-transform duration-500 ease-out" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" 
                                  loading="lazy" />
                         </a>
                         

@@ -18,7 +18,7 @@
       <stop offset="100%" stop-color="#14532d"/>
     </linearGradient>
   </defs>
-  <rect width="300" height="400" fill="url(#bgDarkGreen)" rx="8"/>
+  <rect width="300" height="400" fill="url(#bgDarkGreen)"/>
   <rect x="0" y="25" width="80" height="18" fill="#e11d48" rx="2"/>
   <text x="8" y="38" font-family="sans-serif" font-weight="700" font-size="9" fill="#ffffff">REVISED EDITION</text>
   <text x="150" y="80" font-family="sans-serif" font-weight="900" font-size="28" fill="#ffffff" text-anchor="middle" letter-spacing="4">MATHS</text>

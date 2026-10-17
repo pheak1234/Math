@@ -6,7 +6,7 @@
       <stop offset="100%" stop-color="#0369a1"/>
     </linearGradient>
   </defs>
-  <rect width="300" height="400" fill="url(#bgSkyBlue)" rx="8"/>
+  <rect width="300" height="400" fill="url(#bgSkyBlue)"/>
   <!-- Blueprint graph grid background -->
   <g stroke="#ffffff" stroke-opacity="0.15" stroke-width="1">
     <line x1="0" y1="50" x2="300" y2="50"/>

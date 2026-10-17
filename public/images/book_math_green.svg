@@ -18,8 +18,8 @@
       <stop offset="100%" stop-color="#14532d"/>
     </linearGradient>
   </defs>
-  <rect width="300" height="400" fill="url(#bgGreen)" rx="8"/>
-  <rect x="0" y="0" width="300" height="400" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="12" rx="8"/>
+  <rect width="300" height="400" fill="url(#bgGreen)"/>
+  <rect x="0" y="0" width="300" height="400" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="12"/>
   <rect x="0" y="30" width="300" height="60" fill="#ffffff" fill-opacity="0.95"/>
   <text x="20" y="72" font-family="system-ui, sans-serif" font-weight="900" font-size="34" fill="#15803d" letter-spacing="2">MATH II</text>
   <text x="20" y="115" font-family="system-ui, sans-serif" font-weight="600" font-size="12" fill="#ffffff" letter-spacing="1">TEACHER EDITION</text>

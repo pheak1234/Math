@@ -70,12 +70,12 @@
                     @endphp
                     
                     <!-- Main Showcase Display -->
-                    <div class="aspect-square bg-slate-50/80 rounded-2xl p-6 sm:p-8 flex items-center justify-center border border-slate-200/80 relative overflow-hidden shadow-inner group cursor-zoom-in"
+                    <div class="aspect-square bg-slate-50 rounded-2xl border border-slate-200/80 relative overflow-hidden shadow-xs group cursor-zoom-in"
                          onclick="tmOpenFullscreen()">
                         <img id="tmMainImage" 
                              src="{{ $mainImg }}" 
                              alt="{{ $material->name }}" 
-                             class="max-h-full max-w-full object-contain filter drop-shadow-md group-hover:scale-105 transition-all duration-300">
+                             class="w-full h-full object-cover group-hover:scale-105 transition-all duration-300">
                         
                         <!-- Badges -->
                         <div class="absolute top-4 left-4 flex flex-col gap-1.5 items-start pointer-events-none z-10">
@@ -363,11 +363,11 @@
                         <div class="group bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden">
                             
                             <!-- Card Image Link -->
-                            <div class="relative aspect-square w-full bg-slate-50/70 group-hover:bg-slate-100/50 transition-colors p-5 flex items-center justify-center overflow-hidden border-b border-slate-100">
-                                <a href="{{ route('teaching-materials.show', $rel) }}" class="w-full h-full flex items-center justify-center">
+                            <div class="relative aspect-square w-full bg-slate-50 overflow-hidden border-b border-slate-100">
+                                <a href="{{ route('teaching-materials.show', $rel) }}" class="block w-full h-full">
                                     <img src="{{ $rel->image_url }}" 
                                          alt="{{ $rel->name }}" 
-                                         class="max-w-full max-h-full object-contain filter drop-shadow-xs group-hover:scale-105 transition-transform duration-500 ease-out" 
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" 
                                          loading="lazy" />
                                 </a>
                                 
