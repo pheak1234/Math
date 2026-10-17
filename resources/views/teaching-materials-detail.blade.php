@@ -70,7 +70,8 @@
                     @endphp
                     
                     <!-- Main Showcase Display -->
-                    <div class="aspect-square bg-slate-50/80 rounded-2xl p-6 sm:p-8 flex items-center justify-center border border-slate-200/80 relative overflow-hidden shadow-inner group">
+                    <div class="aspect-square bg-slate-50/80 rounded-2xl p-6 sm:p-8 flex items-center justify-center border border-slate-200/80 relative overflow-hidden shadow-inner group cursor-zoom-in"
+                         onclick="tmOpenFullscreen()">
                         <img id="tmMainImage" 
                              src="{{ $mainImg }}" 
                              alt="{{ $material->name }}" 
@@ -94,16 +95,27 @@
                             </span>
                         @endif
 
+                        <!-- Fullscreen Action Pill -->
+                        <button type="button" 
+                                onclick="event.stopPropagation(); tmOpenFullscreen();"
+                                title="ពង្រីកពេញអេក្រង់ (Full Screen)"
+                                class="absolute bottom-3 left-3 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 flex items-center gap-1.5 backdrop-blur-xs transition-all hover:scale-105 cursor-pointer z-10 group-hover:ring-2 group-hover:ring-sky-400/40">
+                            <svg class="w-3.5 h-3.5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"/>
+                            </svg>
+                            <span>ពង្រីកពេញអេក្រង់</span>
+                        </button>
+
                         @if($hasMultipleImages)
                             <!-- Left / Right Navigation Overlays -->
                             <button type="button" 
-                                    onclick="tmPrevImage()" 
+                                    onclick="event.stopPropagation(); tmPrevImage();" 
                                     aria-label="Previous image"
                                     class="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 cursor-pointer hover:scale-110 active:scale-95 z-20">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                             </button>
                             <button type="button" 
-                                    onclick="tmNextImage()" 
+                                    onclick="event.stopPropagation(); tmNextImage();" 
                                     aria-label="Next image"
                                     class="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 cursor-pointer hover:scale-110 active:scale-95 z-20">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
@@ -576,6 +588,86 @@
         </div>
     </div>
 
+    <!-- Fullscreen Image Lightbox Modal -->
+    <div id="tmFullscreenModal" 
+         class="hidden fixed inset-0 z-[9999] bg-slate-950/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 transition-all duration-300 opacity-0 pointer-events-none"
+         onclick="if(event.target === this) tmCloseFullscreen()">
+        
+        <!-- Top Bar -->
+        <div class="flex items-center justify-between text-white pb-3 border-b border-white/10 z-20">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30">
+                    {{ $material->category }}
+                </span>
+                <h3 class="text-sm sm:text-base font-bold text-white truncate max-w-xs sm:max-w-md lg:max-w-xl">
+                    {{ $material->name }}
+                </h3>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <span id="tmFsCounter" class="text-xs font-mono font-bold text-white/80 bg-white/10 px-3 py-1 rounded-full border border-white/15">
+                    1 / {{ count($allImages) }}
+                </span>
+                <button type="button" 
+                        onclick="tmToggleFsZoom()" 
+                        title="ពង្រីក / បង្រួម (Zoom)"
+                        class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
+                    </svg>
+                </button>
+                <button type="button" 
+                        onclick="tmCloseFullscreen()" 
+                        title="បិទ (ESC)"
+                        class="w-9 h-9 rounded-full bg-white/10 hover:bg-rose-600 text-white flex items-center justify-center transition-colors cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Center Image Showcase with Navigation -->
+        <div class="flex-1 relative flex items-center justify-center overflow-hidden my-auto w-full select-none" onclick="if(event.target === this) tmCloseFullscreen()">
+            @if($hasMultipleImages)
+                <button type="button" 
+                        onclick="event.stopPropagation(); tmPrevImage();" 
+                        aria-label="Previous"
+                        class="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white/10 hover:bg-white/30 text-white border border-white/20 flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer z-20 backdrop-blur-xs">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button type="button" 
+                        onclick="event.stopPropagation(); tmNextImage();" 
+                        aria-label="Next"
+                        class="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white/10 hover:bg-white/30 text-white border border-white/20 flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer z-20 backdrop-blur-xs">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            @endif
+
+            <img id="tmFsImage" 
+                 src="{{ $mainImg }}" 
+                 alt="{{ $material->name }}" 
+                 onclick="event.stopPropagation(); tmToggleFsZoom();"
+                 class="max-h-[72vh] sm:max-h-[80vh] max-w-[92vw] object-contain transition-transform duration-300 select-none drop-shadow-2xl cursor-zoom-in" />
+        </div>
+
+        <!-- Bottom Thumbnails Strip in Fullscreen -->
+        @if($hasMultipleImages)
+            <div class="pt-3 border-t border-white/10 z-20 flex justify-center">
+                <div id="tmFsThumbsContainer" class="flex items-center gap-2 overflow-x-auto max-w-2xl px-2 py-1 scrollbar-thin">
+                    @foreach($allImages as $index => $img)
+                        <button type="button" 
+                                onclick="event.stopPropagation(); tmSelectImage({{ $index }})" 
+                                id="tmFsThumb-{{ $index }}"
+                                class="tm-fs-thumb relative w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-white/5 p-1 border-2 transition-all cursor-pointer shrink-0 flex items-center justify-center {{ $index === 0 ? 'border-sky-400 ring-2 ring-sky-400/50 scale-105 bg-white/20' : 'border-white/20 opacity-50 hover:opacity-100 hover:border-white/40' }}">
+                            <img src="{{ $img }}" alt="{{ $material->name }} - {{ $index + 1 }}" class="max-h-full max-w-full object-contain">
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    </div>
+
     <!-- Footer -->
     @include('partials.footer')
 
@@ -719,6 +811,7 @@
         // Teaching Material Gallery Controller
         const tmImages = @json($allImages);
         let tmCurrentIdx = 0;
+        let tmIsFsZoomed = false;
 
         function tmSelectImage(idx) {
             if (idx < 0 || idx >= tmImages.length) return;
@@ -737,6 +830,17 @@
             if (counter) {
                 counter.textContent = (tmCurrentIdx + 1) + ' / ' + tmImages.length;
             }
+
+            // Sync with Fullscreen Modal if active
+            const fsImg = document.getElementById('tmFsImage');
+            if (fsImg) {
+                fsImg.src = tmImages[tmCurrentIdx];
+            }
+            const fsCounter = document.getElementById('tmFsCounter');
+            if (fsCounter) {
+                fsCounter.textContent = (tmCurrentIdx + 1) + ' / ' + tmImages.length;
+            }
+            tmUpdateFsThumbs();
 
             document.querySelectorAll('.tm-gallery-thumb').forEach((thumb, i) => {
                 if (i === tmCurrentIdx) {
@@ -773,6 +877,92 @@
             const nextIdx = (tmCurrentIdx + 1) % tmImages.length;
             tmSelectImage(nextIdx);
         }
+
+        // Fullscreen Modal Controls
+        function tmOpenFullscreen(idx = null) {
+            if (idx !== null) {
+                tmSelectImage(idx);
+            }
+            const modal = document.getElementById('tmFullscreenModal');
+            if (!modal) return;
+
+            const fsImg = document.getElementById('tmFsImage');
+            if (fsImg) {
+                fsImg.src = tmImages[tmCurrentIdx];
+                fsImg.classList.remove('scale-150', 'cursor-zoom-out');
+                fsImg.classList.add('cursor-zoom-in');
+                tmIsFsZoomed = false;
+            }
+
+            const fsCounter = document.getElementById('tmFsCounter');
+            if (fsCounter) {
+                fsCounter.textContent = (tmCurrentIdx + 1) + ' / ' + tmImages.length;
+            }
+
+            tmUpdateFsThumbs();
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+            }, 10);
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function tmCloseFullscreen() {
+            const modal = document.getElementById('tmFullscreenModal');
+            if (!modal) return;
+
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+            document.body.classList.remove('overflow-hidden');
+            tmIsFsZoomed = false;
+        }
+
+        function tmToggleFsZoom() {
+            const fsImg = document.getElementById('tmFsImage');
+            if (!fsImg) return;
+            tmIsFsZoomed = !tmIsFsZoomed;
+            if (tmIsFsZoomed) {
+                fsImg.classList.add('scale-150', 'cursor-zoom-out');
+                fsImg.classList.remove('cursor-zoom-in');
+            } else {
+                fsImg.classList.remove('scale-150', 'cursor-zoom-out');
+                fsImg.classList.add('cursor-zoom-in');
+            }
+        }
+
+        function tmUpdateFsThumbs() {
+            document.querySelectorAll('.tm-fs-thumb').forEach((thumb, i) => {
+                if (i === tmCurrentIdx) {
+                    thumb.classList.add('border-sky-400', 'ring-2', 'ring-sky-400/50', 'scale-105', 'bg-white/20');
+                    thumb.classList.remove('border-white/20', 'opacity-50');
+                } else {
+                    thumb.classList.remove('border-sky-400', 'ring-2', 'ring-sky-400/50', 'scale-105', 'bg-white/20');
+                    thumb.classList.add('border-white/20', 'opacity-50');
+                }
+            });
+
+            const activeFsThumb = document.getElementById('tmFsThumb-' + tmCurrentIdx);
+            if (activeFsThumb) {
+                activeFsThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }
+
+        // Keyboard Support for Fullscreen & Gallery
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('tmFullscreenModal');
+            if (!modal || modal.classList.contains('hidden') || modal.classList.contains('opacity-0')) return;
+
+            if (e.key === 'Escape') {
+                tmCloseFullscreen();
+            } else if (e.key === 'ArrowLeft') {
+                tmPrevImage();
+            } else if (e.key === 'ArrowRight') {
+                tmNextImage();
+            }
+        });
     </script>
 </body>
 </html>

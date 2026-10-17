@@ -103,7 +103,7 @@
                 <div class="group bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden">
                     
                     <!-- Item Image Preview -->
-                    <div class="relative aspect-square w-full bg-slate-50/70 group-hover:bg-slate-100/50 transition-colors p-5 flex items-center justify-center overflow-hidden border-b border-slate-100">
+                    <div class="relative aspect-square w-full bg-slate-50/70 group-hover:bg-slate-100/50 transition-colors p-4 sm:p-5 flex items-center justify-center overflow-hidden border-b border-slate-100">
                         <a href="{{ route('teaching-materials.show', $item) }}" class="w-full h-full flex items-center justify-center">
                             <img src="{{ $item->image_url }}" 
                                  alt="{{ $item->name }}" 
@@ -123,6 +123,17 @@
                                 </span>
                             @endif
                         </div>
+
+                        <!-- Quick Fullscreen Preview Button -->
+                        <button type="button" 
+                                onclick="event.preventDefault(); event.stopPropagation(); window.openTMQuickModal('{{ $item->image_url }}', '{{ addslashes($item->name) }}', '{{ $item->category }}', '{{ route('teaching-materials.show', $item) }}');"
+                                title="ពង្រីកពេញអេក្រង់ (Full Screen)"
+                                class="absolute bottom-2.5 right-2.5 px-2 py-1 rounded-lg bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200/90 flex items-center gap-1 text-[10px] font-semibold opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-105 cursor-pointer z-10 backdrop-blur-xs">
+                            <svg class="w-3.5 h-3.5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"/>
+                            </svg>
+                            <span class="hidden sm:inline">ពង្រីក</span>
+                        </button>
                     </div>
 
                     <!-- Item Content -->
@@ -555,8 +566,70 @@
             }
         });
 
+    <!-- Quick Fullscreen Lightbox Modal for Teaching Materials -->
+    <div id="tmQuickFsModal" 
+         class="hidden fixed inset-0 z-[9999] bg-slate-950/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 transition-all duration-300 opacity-0 pointer-events-none"
+         onclick="if(event.target === this) window.closeTMQuickModal()">
+        
+        <div class="flex items-center justify-between text-white pb-3 border-b border-white/10 z-20">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <span id="tmQuickCategory" class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30"></span>
+                <h3 id="tmQuickTitle" class="text-sm sm:text-base font-bold text-white truncate max-w-xs sm:max-w-md lg:max-w-xl"></h3>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <a id="tmQuickDetailLink" href="#" class="px-3 py-1.5 rounded-full bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold transition-colors flex items-center gap-1">
+                    <span>មើលលម្អិត</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
+                <button type="button" 
+                        onclick="window.closeTMQuickModal()" 
+                        title="បិទ (ESC)"
+                        class="w-9 h-9 rounded-full bg-white/10 hover:bg-rose-600 text-white flex items-center justify-center transition-colors cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 relative flex items-center justify-center overflow-hidden my-auto w-full select-none" onclick="if(event.target === this) window.closeTMQuickModal()">
+            <img id="tmQuickImg" 
+                 src="" 
+                 alt="" 
+                 class="max-h-[75vh] sm:max-h-[82vh] max-w-[92vw] object-contain transition-transform duration-300 select-none drop-shadow-2xl" />
+        </div>
+    </div>
+
+    <script>
+        window.openTMQuickModal = function(imgUrl, title, category, detailUrl) {
+            const modal = document.getElementById('tmQuickFsModal');
+            if (!modal) return;
+            document.getElementById('tmQuickImg').src = imgUrl;
+            document.getElementById('tmQuickTitle').textContent = title;
+            document.getElementById('tmQuickCategory').textContent = category;
+            document.getElementById('tmQuickDetailLink').href = detailUrl;
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+            }, 10);
+            document.body.classList.add('overflow-hidden');
+        };
+
+        window.closeTMQuickModal = function() {
+            const modal = document.getElementById('tmQuickFsModal');
+            if (!modal) return;
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+            document.body.classList.remove('overflow-hidden');
+        };
+
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
+                window.closeTMQuickModal();
                 closeOrderModal();
                 closeRequestModal();
             }
