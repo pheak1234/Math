@@ -51,20 +51,20 @@
             </nav>
 
             <!-- Right Controls -->
-            <div class="flex items-center space-x-3 sm:space-x-4">
+            <div class="flex items-center space-x-1.5 sm:space-x-2">
                 <!-- Search Button -->
-                <a href="/books" aria-label="Search" class="p-2 text-slate-600 hover:text-sky-600 hover:bg-slate-100 rounded-full transition-colors cursor-pointer" title="ស្វែងរក">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <a href="/books" aria-label="Search" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-slate-600 hover:text-sky-600 hover:bg-sky-50 transition-all duration-200 cursor-pointer group" title="ស្វែងរក">
+                    <svg class="w-5 h-5 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </a>
 
-                <!-- Cart Button with Live Badge -->
-                <button type="button" onclick="window.openTMCartModal()" aria-label="Cart" class="relative p-2 text-slate-600 hover:text-amber-600 hover:bg-amber-50 rounded-full transition-colors cursor-pointer" title="កន្ត្រកសម្ភារៈ">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <!-- Cart Button with Modern Live Badge -->
+                <button type="button" onclick="window.openTMCartModal()" aria-label="Cart" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-slate-600 hover:text-amber-600 hover:bg-amber-50 transition-all duration-200 cursor-pointer group" title="កន្ត្រកសម្ភារៈ">
+                    <svg class="w-5 h-5 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                     </svg>
-                    <span id="headerCartBadge" style="display: none;" class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-black rounded-full items-center justify-center shadow-xs leading-none ring-2 ring-white">
+                    <span id="headerCartBadge" style="display: none; position: absolute; top: -1px; right: -1px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9999px; background: linear-gradient(135deg, #f59e0b, #ea580c); color: #ffffff; font-size: 10px; font-weight: 800; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #ffffff, 0 2px 4px rgba(234, 88, 12, 0.35); align-items: center; justify-content: center; z-index: 10; pointer-events: none;">
                         0
                     </span>
                 </button>
@@ -72,17 +72,17 @@
                 <!-- User Account / Profile -->
                 <div class="relative">
                     @auth
-                        <button onclick="toggleGlobalUserMenu(event)" id="globalUserBtn" class="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-full text-slate-700 hover:bg-slate-100 transition-colors bg-white shadow-sm border border-slate-200 cursor-pointer">
+                        <button onclick="toggleGlobalUserMenu(event)" id="globalUserBtn" class="flex items-center gap-2 p-1 sm:pr-3 rounded-full text-slate-700 hover:bg-slate-100 transition-all bg-white shadow-xs border border-slate-200/80 cursor-pointer">
                             @if(Auth::user()->profile_photo_url)
-                                <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover">
+                                <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover">
                             @else
-                                <div class="w-7 h-7 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-sm">
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-xs sm:text-sm">
                                     {{ substr(Auth::user()->name, 0, 1) }}
                                 </div>
                             @endif
-                            <span class="text-sm font-medium hidden sm:block">{{ Auth::user()->name }}</span>
-                            <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            <span class="text-xs sm:text-sm font-semibold hidden sm:block">{{ Auth::user()->name }}</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
                         <!-- User Dropdown -->
@@ -116,12 +116,9 @@
                             </form>
                         </div>
                     @else
-                        <button onclick="toggleGlobalUserMenu(event)" id="globalUserBtn" class="flex items-center gap-1.5 p-1.5 sm:px-2 sm:py-1 rounded-full text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <button onclick="toggleGlobalUserMenu(event)" id="globalUserBtn" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-200 cursor-pointer group" title="គណនី">
+                            <svg class="w-5 h-5 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                            <svg class="w-3 h-3 text-slate-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
                         </button>
                         <!-- Guest Dropdown -->
