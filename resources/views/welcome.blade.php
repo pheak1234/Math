@@ -171,16 +171,26 @@
                     </h2>
                     <p class="text-sm text-slate-500 mt-1">កម្រងសៀវភៅពុម្ព និងឯកសារជំនួយស្មារតីគណិតវិទ្យាគ្រប់កម្រិត</p>
                 </div>
-                <a href="{{ route('books.index') }}" class="text-xs sm:text-sm font-semibold text-sky-600 hover:text-sky-700 flex items-center gap-1">
-                    <span>មើលទាំងអស់</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('books.index') }}" class="text-xs sm:text-sm font-semibold text-sky-600 hover:text-sky-700 flex items-center gap-1">
+                        <span>មើលទាំងអស់</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    <div class="flex items-center gap-1.5 ml-1">
+                        <button type="button" onclick="scrollBooks('left')" class="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer shadow-2xs" aria-label="Previous Books">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button type="button" onclick="scrollBooks('right')" class="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer shadow-2xs" aria-label="Next Books">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- 5-Column Book Grid (Exact same design as books list page) -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
+            <!-- Books Slider (5 items displayed, smooth slide) -->
+            <div id="booksContainer" class="flex gap-4 sm:gap-5 lg:gap-4 overflow-x-auto pb-4 pt-1 snap-x scroll-smooth no-scrollbar">
                 @forelse($recentBooks as $book)
-                    <div class="bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-200 flex flex-col relative">
+                    <div class="flex-none w-[170px] sm:w-[200px] md:w-[220px] lg:w-[calc((100%-64px)/5)] snap-start bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-200 flex flex-col relative">
                         <!-- Image Container -->
                         <a href="{{ route('books.show', $book->id) }}" class="block relative aspect-[3/4] overflow-hidden border-b border-slate-100">
                             @php
@@ -214,7 +224,7 @@
                             </a>
                             
                             <!-- Author -->
-                            <div class="text-[11px] text-slate-500 mb-1.5">
+                            <div class="text-[11px] text-slate-500 mb-1.5 truncate">
                                 ដោយ <span class="text-slate-700">{{ $book->author ?? 'ANONTAK' }}</span>
                             </div>
                             
@@ -237,21 +247,21 @@
                             </div>
                             
                             <!-- Price & Status -->
-                            <div class="mt-auto pt-2 flex items-end justify-between">
+                            <div class="mt-auto pt-2 flex items-end justify-between gap-1">
                                 <div>
                                     @if($book->price > 0)
-                                        <div class="text-lg font-bold text-slate-900 leading-none">${{ number_format($book->price, 2) }}</div>
+                                        <div class="text-base sm:text-lg font-bold text-slate-900 leading-none">${{ number_format($book->price, 2) }}</div>
                                     @else
-                                        <div class="text-base font-bold text-emerald-600 leading-none">FREE</div>
+                                        <div class="text-sm sm:text-base font-bold text-emerald-600 leading-none">FREE</div>
                                     @endif
                                 </div>
                                 
                                 @if(Auth::check() && Auth::user()->hasReadBook($book))
-                                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 border border-emerald-200">
+                                    <span class="text-[9px] sm:text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 border border-emerald-200 shrink-0">
                                         ✓ នៅក្នុងបណ្ណាល័យ
                                     </span>
                                 @elseif(Auth::check() && Auth::user()->hasOrderedBook($book))
-                                    <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 border border-amber-200">
+                                    <span class="text-[9px] sm:text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 border border-amber-200 shrink-0">
                                         កំពុងរង់ចាំ
                                     </span>
                                 @endif
@@ -259,7 +269,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="col-span-full py-16 text-center bg-white rounded-2xl border border-slate-200">
+                    <div class="w-full py-16 text-center bg-white rounded-2xl border border-slate-200">
                         <p class="text-slate-500 text-sm">មិនទាន់មានសៀវភៅនៅឡើយទេ។</p>
                     </div>
                 @endforelse

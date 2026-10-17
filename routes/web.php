@@ -44,7 +44,7 @@ Route::get('/', function () {
     $recentBooks = Book::with(['reviews'])
         ->orderByDesc('priority')
         ->latest()
-        ->take(10)
+        ->take(5)
         ->get();
 
     $recentMaterials = TeachingMaterial::orderByDesc('is_featured')
