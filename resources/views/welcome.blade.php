@@ -171,22 +171,18 @@
                     </h2>
                     <p class="text-sm text-slate-500 mt-1">កម្រងសៀវភៅពុម្ព និងឯកសារជំនួយស្មារតីគណិតវិទ្យាគ្រប់កម្រិត</p>
                 </div>
-                <div class="hidden sm:flex items-center gap-2">
-                    <button onclick="scrollBooks('left')" class="p-2 rounded-full border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer" aria-label="Previous Books">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    </button>
-                    <button onclick="scrollBooks('right')" class="p-2 rounded-full border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer" aria-label="Next Books">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                </div>
+                <a href="{{ route('books.index') }}" class="text-xs sm:text-sm font-semibold text-sky-600 hover:text-sky-700 flex items-center gap-1">
+                    <span>មើលទាំងអស់</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
             </div>
 
-            <!-- Books Grid / Carousel (5 Books exactly matching user's visual) -->
-            <div id="booksContainer" class="flex gap-4 sm:gap-6 overflow-x-auto pb-4 pt-2 snap-x scroll-smooth no-scrollbar">
-                
-                                @foreach($recentBooks as $book)
-                    <div class="flex-none w-48 sm:w-56 book-card bg-white rounded-xl overflow-hidden border border-slate-200/80 shadow-sm snap-start group flex flex-col">
-                        <div class="aspect-[3/4] w-full overflow-hidden bg-slate-100 relative">
+            <!-- 5-Column Book Grid (Exact same design as books list page) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
+                @forelse($recentBooks as $book)
+                    <div class="bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-200 flex flex-col relative">
+                        <!-- Image Container -->
+                        <a href="{{ route('books.show', $book->id) }}" class="block relative aspect-[3/4] overflow-hidden border-b border-slate-100">
                             @php
                                 if ($book->cover_image) {
                                     $bookImg = str_starts_with($book->cover_image, '/') || str_starts_with($book->cover_image, 'http') 
@@ -196,23 +192,77 @@
                                     $bookImg = '/images/book_math_blue.svg';
                                 }
                             @endphp
-                            <img src="{{ $bookImg }}" alt="{{ $book->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                            @if($book->priority > 0)
-                                <span class="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-500 text-white shadow-2xs">ពិសេស</span>
+                            <img src="{{ $bookImg }}" alt="{{ $book->title }}" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            
+                            <!-- Badges -->
+                            @if($book->price > 0)
+                                <div class="absolute top-0 left-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wide z-10 shadow-sm">
+                                    Premium
+                                </div>
+                            @else
+                                <div class="absolute top-0 left-0 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wide z-10 shadow-sm">
+                                    Free
+                                </div>
                             @endif
-                            <span class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-white shadow-2xs">${{ number_format($book->price, 2) }}</span>
-                        </div>
-                        <div class="p-3.5 flex-1 flex flex-col justify-between">
-                            <div>
-                                <h4 class="font-bold text-slate-900 text-sm line-clamp-1">{{ $book->title }}</h4>
-                                <p class="text-xs text-slate-500 mt-0.5">{{ $book->author }}</p>
+                        </a>
+                        
+                        <!-- Details -->
+                        <div class="p-3 flex flex-col flex-1">
+                            <!-- Title -->
+                            <a href="{{ route('books.show', $book->id) }}" class="text-sm font-medium text-sky-700 hover:text-orange-600 hover:underline line-clamp-2 leading-tight mb-1">
+                                {{ $book->title }}
+                            </a>
+                            
+                            <!-- Author -->
+                            <div class="text-[11px] text-slate-500 mb-1.5">
+                                ដោយ <span class="text-slate-700">{{ $book->author ?? 'ANONTAK' }}</span>
                             </div>
-                            <button onclick="previewBook('{{ addslashes($book->title) }}', '{{ addslashes($book->description ?? '') }}', '{{ $bookImg }}')" class="mt-3 w-full py-1.5 rounded-lg bg-slate-100 hover:bg-sky-500 hover:text-white text-slate-700 text-xs font-semibold transition-colors cursor-pointer">
-                                មើលលម្អិត
-                            </button>
+                            
+                            <!-- Rating -->
+                            <div class="flex items-center gap-1 mb-2">
+                                <div class="flex text-amber-500 text-xs">
+                                    @php
+                                        $avg = $book->averageRating();
+                                        $fullStars = floor($avg);
+                                    @endphp
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= $fullStars)
+                                            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                        @else
+                                            <svg class="w-3.5 h-3.5 fill-current text-slate-300" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="text-[11px] text-sky-600 hover:underline">{{ $book->reviews ? $book->reviews->count() : 0 }}</span>
+                            </div>
+                            
+                            <!-- Price & Status -->
+                            <div class="mt-auto pt-2 flex items-end justify-between">
+                                <div>
+                                    @if($book->price > 0)
+                                        <div class="text-lg font-bold text-slate-900 leading-none">${{ number_format($book->price, 2) }}</div>
+                                    @else
+                                        <div class="text-base font-bold text-emerald-600 leading-none">FREE</div>
+                                    @endif
+                                </div>
+                                
+                                @if(Auth::check() && Auth::user()->hasReadBook($book))
+                                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 border border-emerald-200">
+                                        ✓ នៅក្នុងបណ្ណាល័យ
+                                    </span>
+                                @elseif(Auth::check() && Auth::user()->hasOrderedBook($book))
+                                    <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 border border-amber-200">
+                                        កំពុងរង់ចាំ
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <div class="col-span-full py-16 text-center bg-white rounded-2xl border border-slate-200">
+                        <p class="text-slate-500 text-sm">មិនទាន់មានសៀវភៅនៅឡើយទេ។</p>
+                    </div>
+                @endforelse
             </div>
 
         </div>
