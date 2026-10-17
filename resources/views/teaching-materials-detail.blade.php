@@ -348,80 +348,91 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     @foreach($related as $rel)
-                        <div class="rounded-2xl transition-all duration-300 flex flex-col group overflow-hidden hover:-translate-y-1.5 {{ $rel->price > 0 ? 'bg-gradient-to-b from-amber-500/[0.08] via-amber-500/[0.02] to-white border-2 border-amber-300 hover:border-amber-500 shadow-md shadow-amber-500/10 hover:shadow-xl hover:shadow-amber-500/25 ring-1 ring-amber-400/20' : 'bg-white border border-slate-200 shadow-2xs hover:shadow-lg hover:border-sky-300' }}">
+                        <div class="group bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden">
                             
                             <!-- Card Image Link -->
-                            <a href="{{ route('teaching-materials.show', $rel) }}" class="aspect-square w-full bg-slate-50 p-6 flex items-center justify-center relative overflow-hidden border-b {{ $rel->price > 0 ? 'border-amber-100' : 'border-slate-100' }} block">
-                                @php
-                                    if ($rel->image) {
-                                        $relImg = str_starts_with($rel->image, '/') || str_starts_with($rel->image, 'http') 
-                                            ? $rel->image 
-                                            : Storage::url($rel->image);
-                                    } else {
-                                        $relImg = '/images/tool_ruler.svg';
-                                    }
-                                @endphp
-                                <img src="{{ $relImg }}" 
-                                     alt="{{ $rel->name }}" 
-                                     class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 filter drop-shadow-sm" />
+                            <div class="relative aspect-square w-full bg-slate-50/70 group-hover:bg-slate-100/50 transition-colors p-5 flex items-center justify-center overflow-hidden border-b border-slate-100">
+                                <a href="{{ route('teaching-materials.show', $rel) }}" class="w-full h-full flex items-center justify-center">
+                                    <img src="{{ $rel->image_url }}" 
+                                         alt="{{ $rel->name }}" 
+                                         class="max-w-full max-h-full object-contain filter drop-shadow-xs group-hover:scale-105 transition-transform duration-500 ease-out" 
+                                         loading="lazy" />
+                                </a>
                                 
-                                <div class="absolute top-3 left-3 flex items-center gap-1.5">
-                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white text-slate-700 shadow-xs border border-slate-200">
+                                <!-- Badges -->
+                                <div class="absolute top-3 inset-x-3 flex items-center justify-between pointer-events-none">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-white/95 backdrop-blur-xs text-slate-700 shadow-xs border border-slate-200/80">
                                         {{ $rel->category }}
                                     </span>
-                                    @if($rel->price > 0)
-                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white shadow-md shadow-amber-500/30 flex items-center gap-1 ring-1 ring-white">
-                                            <span>👑</span> <span>PREMIUM</span>
+                                    @if($rel->is_featured)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-500 text-white shadow-xs">
+                                            <span>★</span>
+                                            <span>ពេញនិយម</span>
                                         </span>
                                     @endif
                                 </div>
-                                
-                                @if($rel->is_featured)
-                                    <span class="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-xs">
-                                        ពេញនិយម
-                                    </span>
-                                @endif
-                            </a>
+                            </div>
 
                             <!-- Card Content -->
-                            <div class="p-5 flex-1 flex flex-col">
-                                <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium mb-1.5">
-                                    <svg class="w-3.5 h-3.5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="p-4 sm:p-5 flex-1 flex flex-col">
+                                <div class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium mb-1.5">
+                                    <svg class="w-3.5 h-3.5 text-sky-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                     </svg>
                                     <span>{{ $rel->grade_level }}</span>
                                 </div>
 
-                                <h3 class="font-bold text-slate-900 text-sm leading-snug group-hover:text-sky-600 transition-colors line-clamp-2">
+                                <h3 class="font-bold text-slate-900 group-hover:text-sky-600 transition-colors text-sm leading-snug line-clamp-2 min-h-[2.5rem]">
                                     <a href="{{ route('teaching-materials.show', $rel) }}">
                                         {{ $rel->name }}
                                     </a>
                                 </h3>
 
-                                <p class="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">
+                                <p class="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">
                                     {{ $rel->description }}
                                 </p>
 
-                                <div class="mt-auto pt-3">
-                                    @if($rel->price > 0)
-                                        <div class="text-amber-600 font-extrabold text-base mb-3 flex items-center gap-1.5">
-                                            <span>${{ number_format($rel->price, 2) }}</span>
-                                            <span class="text-[10px] uppercase tracking-wider text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full font-black border border-amber-200">PRO</span>
-                                        </div>
-                                    @else
-                                        <div class="text-emerald-600 font-bold mb-3 flex items-center gap-1">
-                                            <span>🎁 ឥតគិតថ្លៃ (Free)</span>
-                                        </div>
-                                    @endif
+                                @if($rel->specifications)
+                                    @php
+                                        $firstRelSpec = trim(explode('|', $rel->specifications)[0]);
+                                    @endphp
+                                    <div class="mt-2.5 flex items-center gap-1.5 text-[11px] text-slate-600 bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1.5">
+                                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        <span class="truncate" title="{{ $firstRelSpec }}">{{ $firstRelSpec }}</span>
+                                    </div>
+                                @endif
 
-                                    <div class="border-t {{ $rel->price > 0 ? 'border-amber-100' : 'border-slate-100' }} pt-3 flex items-center gap-2">
+                                <div class="mt-auto pt-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        @if($rel->price > 0)
+                                            <div class="flex items-baseline gap-1">
+                                                <span class="text-xs text-slate-400 font-medium">$</span>
+                                                <span class="text-lg font-black text-slate-900 tracking-tight">{{ number_format($rel->price, 2) }}</span>
+                                            </div>
+                                            <span class="text-[10px] uppercase font-bold tracking-wider text-amber-700 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-md">
+                                                PRO
+                                            </span>
+                                        @else
+                                            <div class="flex items-center gap-1.5 text-emerald-600 font-bold text-sm">
+                                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                                <span>ឥតគិតថ្លៃ (Free)</span>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="border-t border-slate-100 pt-3 flex items-center gap-2">
                                         <a href="{{ route('teaching-materials.show', $rel) }}" 
-                                           class="py-2 px-2.5 rounded-xl border border-slate-200 hover:border-sky-400 bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-600 text-xs font-semibold transition-colors text-center flex items-center justify-center gap-1 shrink-0">
+                                           class="py-2 px-3 rounded-xl border border-slate-200 hover:border-sky-300 bg-white hover:bg-sky-50/50 text-slate-700 hover:text-sky-600 text-xs font-semibold transition-all text-center flex items-center justify-center shrink-0">
                                             <span>មើលលម្អិត</span>
                                         </a>
-                                        <button type="button" onclick="window.addTMCart({{ json_encode($rel) }})" 
-                                                class="flex-1 py-2 px-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 hover:shadow-lg cursor-pointer">
-                                            <span>🛒</span>
+                                        <button type="button" 
+                                                onclick="window.addTMCart({{ json_encode($rel) }})" 
+                                                class="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md hover:shadow-orange-500/20 active:scale-95 cursor-pointer">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                            </svg>
                                             <span>+ ថែមទៅកន្ត្រក</span>
                                         </button>
                                     </div>
